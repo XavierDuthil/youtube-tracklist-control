@@ -1,5 +1,4 @@
-var titleElement, videoElement, nextButtonElement, previousButtonElement;
-getElements();
+var currentUrl, titleElement, videoElement, nextButtonElement;
 
 function getElements() {
   titleElement = document.querySelectorAll("h1.title")[0];
@@ -39,11 +38,15 @@ function nextVideo() {
   if (!videoElement) {
     getElements();
   }
-
   nextButtonElement.click();
 }
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+  if (!currentUrl || currentUrl !== location.href) {
+    getElements();
+    currentUrl = location.href;
+  }
+
   switch (message) {
     case "getCurrentVideo":
       sendResponse(getCurrentVideo());
