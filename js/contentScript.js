@@ -1,5 +1,31 @@
 var currentUrl, titleElement, videoElement, nextButtonElement, descriptionElement, trackList;
 
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+  if (!currentUrl || currentUrl !== location.href) {
+    trackList = {};
+    getElements();
+    currentUrl = location.href;
+  }
+
+  switch (message) {
+    case "getCurrentVideo":
+      sendResponse(getCurrentVideo());
+      break;
+    case "getCurrentTrack":
+      sendResponse(getCurrentTrack());
+      break;
+    case "playOrPause":
+      playOrPause();
+      break;
+    case "previous":
+      previousVideo();
+      break;
+    case "next":
+      nextVideo();
+      break;
+  }
+});
+
 function getElements() {
   titleElement = document.querySelectorAll("h1.title")[0];
   videoElement = document.getElementsByTagName("video")[0];
@@ -101,29 +127,3 @@ function parseTime(hours, minutes, seconds) {
   seconds = parseInt(seconds) || 0;
   return hours * 3600 + minutes * 60 + seconds;
 }
-
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-  if (!currentUrl || currentUrl !== location.href) {
-    trackList = {};
-    getElements();
-    currentUrl = location.href;
-  }
-
-  switch (message) {
-    case "getCurrentVideo":
-      sendResponse(getCurrentVideo());
-      break;
-    case "getCurrentTrack":
-      sendResponse(getCurrentTrack());
-      break;
-    case "playOrPause":
-      playOrPause();
-      break;
-    case "previous":
-      previousVideo();
-      break;
-    case "next":
-      nextVideo();
-      break;
-  }
-});
