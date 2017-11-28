@@ -22,11 +22,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "playOrPause":
       playOrPause();
       break;
-    case "restart":
-      restart();
-      break;
     case "previous":
-      previousVideo();
+      previous();
       break;
     case "next":
       nextVideo();
@@ -69,8 +66,7 @@ function playOrPause() {
   }
 }
 
-function restart() {
-  console.log(isEmpty(trackList))
+function previous() {
   if (isEmpty(trackList)) {
     videoElement.currentTime = 0;
   } else {

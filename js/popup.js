@@ -8,7 +8,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   startTicker();
 
   document.getElementById("playOrPauseButton").addEventListener("click", playOrPausePressed);
-  document.getElementById("restartButton").addEventListener("click", restartPressed);
+  document.getElementById("previousButton").addEventListener("click", previousPressed);
   document.getElementById("nextButton").addEventListener("click", nextPressed);
 
   function startTicker() {
@@ -26,8 +26,8 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   function playOrPausePressed() {
     chrome.tabs.sendMessage(tabId, "playOrPause")
   }
-  function restartPressed() {
-    chrome.tabs.sendMessage(tabId, "restart")
+  function previousPressed() {
+    chrome.tabs.sendMessage(tabId, "previous")
   }
   function nextPressed() {
     chrome.tabs.sendMessage(tabId, "next")
