@@ -1,4 +1,4 @@
-function reloadCurrentVideo(tabId, currentVideoElement) {
+function refreshCurrentVideo(tabId, currentVideoElement) {
   chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
     if (response) {
       currentVideoElement.textContent = response;
@@ -8,7 +8,7 @@ function reloadCurrentVideo(tabId, currentVideoElement) {
   });
 }
 
-function reloadCurrentTrack(tabId, currentTrackElement) {
+function refreshCurrentTrack(tabId, currentTrackElement) {
   chrome.tabs.sendMessage(tabId, "getCurrentTrack", function (response) {
     if (response) {
       currentTrackElement.textContent = response;
@@ -19,35 +19,19 @@ function reloadCurrentTrack(tabId, currentTrackElement) {
   });
 }
 
-// var views = chrome.extension.getViews({
-//   type: "popup"
-// });
-// for (var i = 0; i < views.length; i++) {
-//   var config = {
-//     'refresh_time': 1000
-//   };
-//
-//   var currentTrack = {
-//     init: function () {
-//       this.startTicker();
-//     },
-//
-//     startTicker: function () {
-//       var self = this;
-//       this.globalIntervalId = window.setInterval(function () {
-//         self.reloadCurrentVideo();
-//       }, config["refresh_time"]);
-//     },
-//
-//     reloadCurrentVideo: function () {
-//       chrome.tabs.sendMessage(tab[0].id, "getCurrentVideo", function (response) {
-//         var currentVideoElement = document.getElementById("currentTrack");
-//         if (response) {
-//           currentVideoElement.textContent = response;
-//         } else {
-//           currentVideoElement.textContent = "Current video";
-//         }
-//       });
-//     }
-//   }.init();
-// }
+function refreshCurrentTime(tabId, currentTimeElement) {
+  chrome.tabs.sendMessage(tabId, "getCurrentTime", function (response) {
+    if (response) {
+      var seconds = parseInt(response);
+
+      var date = new Date(null);
+      date.setSeconds(seconds);
+      var dateISO = date.toISOString();
+      var timeStr = seconds >= 3600 ? dateISO.substr(11, 8) : dateISO.substr(14, 5);
+
+      currentTimeElement.textContent = "[" + timeStr + "]";
+    } else {
+      currentTimeElement.display = "None";
+    }
+  });
+}

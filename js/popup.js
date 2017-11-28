@@ -4,8 +4,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   };
   var tabId = tab[0].id;
   var backgroundPage = chrome.extension.getBackgroundPage();
-  reloadCurrentVideo();
-  reloadCurrentTrack();
+  refreshPopup();
   startTicker();
 
   document.getElementById("playOrPauseButton").addEventListener("click", playOrPausePressed);
@@ -14,17 +13,14 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
 
   function startTicker() {
     window.setInterval(function () {
-      reloadCurrentVideo();
-      reloadCurrentTrack();
+      refreshPopup();
     }, config["refresh_time"]);
   }
 
-  function reloadCurrentVideo() {
-    backgroundPage.reloadCurrentTrack(tabId, document.getElementById("currentVideoLabel"));
-  }
-
-  function reloadCurrentTrack() {
-    backgroundPage.reloadCurrentTrack(tabId, document.getElementById("currentTrackLabel"));
+  function refreshPopup() {
+    backgroundPage.refreshCurrentVideo(tabId, document.getElementById("currentVideoLabel"));
+    backgroundPage.refreshCurrentTrack(tabId, document.getElementById("currentTrackLabel"));
+    backgroundPage.refreshCurrentTime(tabId, document.getElementById("currentTimeLabel"));
   }
 
   function playOrPausePressed() {

@@ -14,8 +14,14 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "getCurrentTrack":
       sendResponse(getCurrentTrack());
       break;
+    case "getCurrentTime":
+      sendResponse(getCurrentTime());
+      break;
     case "playOrPause":
       playOrPause();
+      break;
+    case "restart":
+      restart();
       break;
     case "previous":
       previousVideo();
@@ -61,6 +67,15 @@ function playOrPause() {
   }
 }
 
+function restart() {
+  console.log(isEmpty(trackList))
+  if (isEmpty(trackList)) {
+    videoElement.currentTime = 0;
+  } else {
+    // TODO
+  }
+}
+
 function nextVideo() {
   if (!videoElement) {
     getElements();
@@ -79,7 +94,7 @@ function getCurrentTrack() {
   if (!videoElement) {
     getElements();
   }
-  if (!trackList || Object.keys(trackList).length === 0) {
+  if (!trackList || isEmpty(trackList)) {
     getElements();
     trackList = buildTrackList();
   }
@@ -126,4 +141,8 @@ function parseTime(hours, minutes, seconds) {
   minutes = parseInt(minutes) || 0;
   seconds = parseInt(seconds) || 0;
   return hours * 3600 + minutes * 60 + seconds;
+}
+
+function isEmpty(dict) {
+  return Object.keys(dict).length === 0;
 }
