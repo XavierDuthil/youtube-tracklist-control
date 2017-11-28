@@ -1,4 +1,6 @@
 var currentUrl, titleElement, videoElement, nextButtonElement, descriptionElement, trackList;
+var timestampRegex = /(\d+:)?(\d\d):(\d\d)/;
+var otherTimestampRegex = /\s*\W{1,2}\s*(\d+:)?\d\d:\d\d/;
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (!currentUrl || currentUrl !== location.href) {
@@ -117,7 +119,6 @@ function buildTrackList() {
   var trackList = {};
   var descriptionStr = descriptionElement.textContent;
   var descriptionLines = descriptionStr.split("\n");
-  var timestampRegex = /(\d+:)?(\d\d):(\d\d)/;
 
   for (var lineNum in descriptionLines) {
     var line = descriptionLines[lineNum];
@@ -127,14 +128,40 @@ function buildTrackList() {
     }
 
     var timestamp = regexResult[0];
-    line = line.replace(timestamp, "").trim();
+    var trackTitle = extractTrackTitle(line, timestamp);
 
     var time = parseTime(regexResult[1], regexResult[2], regexResult[3]);
-    trackList[time] = line;
+    trackList[time] = trackTitle;
   }
+
+  trackList = cleanTracklistTitles(trackList);
 
   return trackList;
 }
+
+function extractTrackTitle(descriptionLine, timestamp) {
+  var trackTitle = descriptionLine.replace(timestamp, "").trim();
+
+  // Trim prefix
+  if (trackTitle.search(otherTimestampRegex) === 0) {
+    trackTitle = trackTitle.replace(otherTimestampRegex, "");
+  }
+
+  // Trim suffix
+  // TODO: Check if at the end of the string
+  // trackTitle = trackTitle.replace(otherTimestampRegex, "");
+  return trackTitle;
+}
+
+function cleanTracklistTitles(tracklist) {
+  // TODO
+  // tracklist = trimCommonPreSuffixes();
+  return tracklist;
+}
+
+// function trimCommonPreSuffixes(tracklist) {
+//
+// }
 
 function parseTime(hours, minutes, seconds) {
   hours = parseInt(hours) || 0;
