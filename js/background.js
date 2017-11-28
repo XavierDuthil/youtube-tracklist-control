@@ -1,3 +1,13 @@
+function reloadCurrentVideo(tabId, currentVideoElement) {
+  chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
+    if (response) {
+      currentVideoElement.textContent = response;
+    } else {
+      currentVideoElement.textContent = "Current video";
+    }
+  });
+}
+
 function reloadCurrentTrack(tabId, currentTrackElement) {
   chrome.tabs.sendMessage(tabId, "getCurrentTrack", function (response) {
     if (response) {

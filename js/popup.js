@@ -20,14 +20,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   }
 
   function reloadCurrentVideo() {
-    chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
-      var currentVideoElement = document.getElementById("currentVideoLabel");
-      if (response) {
-        currentVideoElement.textContent = response;
-      } else {
-        currentVideoElement.textContent = "Current video";
-      }
-    });
+    backgroundPage.reloadCurrentTrack(tabId, document.getElementById("currentVideoLabel"));
   }
 
   function reloadCurrentTrack() {
