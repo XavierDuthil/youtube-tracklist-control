@@ -2,8 +2,9 @@ function reloadCurrentTrack(tabId, currentTrackElement) {
   chrome.tabs.sendMessage(tabId, "getCurrentTrack", function (response) {
     if (response) {
       currentTrackElement.textContent = response;
+      currentTrackElement.display = "Block";
     } else {
-      currentTrackElement.textContent = "Current track";
+      currentTrackElement.display = "None";
     }
   });
 }
