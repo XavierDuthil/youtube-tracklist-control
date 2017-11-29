@@ -4,7 +4,7 @@ var otherTimestampRegex = /\s*\W{1,2}\s*(\d+:)?\d?\d:\d\d/;
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (!currentUrl || currentUrl !== location.href) {
-    trackList = {};
+    trackList = [];
     getElements();
     currentUrl = location.href;
   }
@@ -14,11 +14,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       sendResponse(getCurrentVideo());
       break;
     case "getCurrentTrack":
-      if (!trackList) {
+      if (trackList.length === 0) {
         sendResponse("");
       }
-      var currentTrackTitle = trackList[getCurrentTrackStartTime()];
-      sendResponse(currentTrackTitle);
+      var currentTrack = getCurrentTrack();
+      sendResponse(currentTrack ? currentTrack["title"] : "");
       break;
     case "getCurrentTime":
       sendResponse(getCurrentTime());
@@ -68,7 +68,7 @@ function previous() {
     getElements();
   }
 
-  if (isEmpty(trackList)) {
+  if (trackList.length === 0) {
     videoElement.currentTime = 0;
     return;
   }
@@ -82,7 +82,7 @@ function next() {
     getElements();
   }
 
-  if (isEmpty(trackList)) {
+  if (trackList) {
     nextButtonElement.click();
     return;
   }
@@ -98,38 +98,34 @@ function getCurrentTime() {
   return videoElement.currentTime;
 }
 
-function getCurrentTrackStartTime() {
+function getCurrentTrack() {
   if (!videoElement) {
     getElements();
   }
-  if (!trackList || isEmpty(trackList)) {
+  if (trackList.length === 0) {
     getElements();
     trackList = buildTrackList();
   }
 
   var currentTime = getCurrentTime();
-  var currentTrackStartTime = 0;
+  var currentTrackNum = 0;
 
-  // Keep in mind that a dict isn't sorted
-  for (var trackStartTime in trackList) {
-    trackStartTime = parseInt(trackStartTime);
-
+  for (var trackNum in trackList) {
+    var trackStartTime = parseInt(trackList[trackNum]["startTime"]);
     if (trackStartTime > currentTime) {
-      continue;
+      break;
     }
-
-    if (trackStartTime > currentTrackStartTime) {
-      currentTrackStartTime = trackStartTime;
-    }
+    currentTrackNum = trackNum;
   }
-  return currentTrackStartTime;
+  console.log(currentTrackNum)
+  return trackList[currentTrackNum];
 }
 
 function buildTrackList() {
   if (!descriptionElement) {
     getElements();
   }
-  var trackList = {};
+  var trackList = [];
   var descriptionStr = descriptionElement.textContent;
   var descriptionLines = descriptionStr.split("\n");
 
@@ -143,13 +139,18 @@ function buildTrackList() {
     var timestamp = regexResult[0];
     var trackTitle = extractTrackTitle(line, timestamp);
 
-    var time = parseTime(regexResult[1], regexResult[2], regexResult[3]);
-    trackList[time] = trackTitle;
+    var startTime = parseTime(regexResult[1], regexResult[2], regexResult[3]);
+    trackList.push({"startTime": startTime, "title": trackTitle});
   }
 
   trackList = cleanTracklistTitles(trackList);
+  return sort(trackList);
+}
 
-  return trackList;
+function sort(trackList) {
+  return trackList.sort(function (a, b) {
+    return a["startTime"] - b["startTime"];
+  });
 }
 
 function extractTrackTitle(descriptionLine, timestamp) {
