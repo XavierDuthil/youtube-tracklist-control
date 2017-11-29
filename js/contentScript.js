@@ -68,13 +68,13 @@ function previous() {
     getElements();
   }
 
-  if (trackList.length === 0) {
+  var currentTrackNum = getCurrentTrackNum();
+  if (trackList.length === 0 || currentTrackNum === 0) {
     videoElement.currentTime = 0;
     return;
   }
 
-  // TODO
-
+  videoElement.currentTime = trackList[currentTrackNum - 1]["startTime"];
 }
 
 function next() {
@@ -82,13 +82,13 @@ function next() {
     getElements();
   }
 
-  if (trackList) {
+  var currentTrackNum = getCurrentTrackNum();
+  if (trackList.length === 0 || currentTrackNum === trackList.length - 1) {
     nextButtonElement.click();
     return;
   }
 
-  // TODO
-
+  videoElement.currentTime = trackList[currentTrackNum + 1]["startTime"];
 }
 
 function getCurrentTime() {
@@ -98,7 +98,7 @@ function getCurrentTime() {
   return videoElement.currentTime;
 }
 
-function getCurrentTrack() {
+function getCurrentTrackNum() {
   if (!videoElement) {
     getElements();
   }
@@ -117,8 +117,11 @@ function getCurrentTrack() {
     }
     currentTrackNum = trackNum;
   }
-  console.log(currentTrackNum)
-  return trackList[currentTrackNum];
+  return parseInt(currentTrackNum);
+}
+
+function getCurrentTrack() {
+  return trackList[getCurrentTrackNum()];
 }
 
 function buildTrackList() {
