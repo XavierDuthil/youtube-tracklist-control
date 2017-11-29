@@ -1,6 +1,6 @@
 var currentUrl, titleElement, videoElement, nextButtonElement, descriptionElement, trackList;
-var timestampRegex = /(\d+:)?(\d\d):(\d\d)/;
-var otherTimestampRegex = /\s*\W{1,2}\s*(\d+:)?\d\d:\d\d/;
+var timestampRegex = /(\d+:)?(\d?\d):(\d\d)/;
+var otherTimestampRegex = /\s*\W{1,2}\s*(\d+:)?\d?\d:\d\d/;
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (!currentUrl || currentUrl !== location.href) {
@@ -14,7 +14,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       sendResponse(getCurrentVideo());
       break;
     case "getCurrentTrack":
-      sendResponse(getCurrentTrack());
+      if (!trackList) {
+        sendResponse("");
+      }
+      var currentTrackTitle = trackList[getCurrentTrackStartTime()];
+      sendResponse(currentTrackTitle);
       break;
     case "getCurrentTime":
       sendResponse(getCurrentTime());
@@ -26,7 +30,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       previous();
       break;
     case "next":
-      nextVideo();
+      next();
       break;
   }
 });
@@ -39,13 +43,6 @@ function getElements() {
 }
 
 function getCurrentVideo() {
-  if (!titleElement) {
-    getElements();
-  }
-	return titleElement.textContent;
-}
-
-function getCurrentTrack() {
   if (!titleElement) {
     getElements();
   }
@@ -67,18 +64,31 @@ function playOrPause() {
 }
 
 function previous() {
-  if (isEmpty(trackList)) {
-    videoElement.currentTime = 0;
-  } else {
-    // TODO
-  }
-}
-
-function nextVideo() {
   if (!videoElement) {
     getElements();
   }
-  nextButtonElement.click();
+
+  if (isEmpty(trackList)) {
+    videoElement.currentTime = 0;
+    return;
+  }
+
+  // TODO
+
+}
+
+function next() {
+  if (!videoElement) {
+    getElements();
+  }
+
+  if (isEmpty(trackList)) {
+    nextButtonElement.click();
+    return;
+  }
+
+  // TODO
+
 }
 
 function getCurrentTime() {
@@ -88,7 +98,7 @@ function getCurrentTime() {
   return videoElement.currentTime;
 }
 
-function getCurrentTrack() {
+function getCurrentTrackStartTime() {
   if (!videoElement) {
     getElements();
   }
@@ -98,14 +108,21 @@ function getCurrentTrack() {
   }
 
   var currentTime = getCurrentTime();
-  var trackTitle = "";
+  var currentTrackStartTime = 0;
+
+  // Keep in mind that a dict isn't sorted
   for (var trackStartTime in trackList) {
+    trackStartTime = parseInt(trackStartTime);
+
     if (trackStartTime > currentTime) {
-      break;
+      continue;
     }
-    trackTitle = trackList[trackStartTime];
+
+    if (trackStartTime > currentTrackStartTime) {
+      currentTrackStartTime = trackStartTime;
+    }
   }
-  return trackTitle;
+  return currentTrackStartTime;
 }
 
 function buildTrackList() {
