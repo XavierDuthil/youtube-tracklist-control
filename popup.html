@@ -1,81 +1,91 @@
 <!doctype html>
 <html>
-  <head>
-    <script src="resources/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="resources/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <script src="resources/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<head>
+  <script src="resources/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="resources/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="resources/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 
-    <title>Youtube compilation helper Extension's Popup</title>
-    <style type="text/css">
-      body {
-        margin: 10px;
-        padding: 5px;
-        white-space: nowrap;
-        max-width: 500px;
-      }
+  <title>Youtube compilation helper Extension's Popup</title>
+  <style type="text/css">
+    body {
+      margin: 10px;
+      padding: 5px;
+      white-space: nowrap;
+      max-width: 500px;
+      min-width: 300px;
+    }
 
-      #currentVideoLabel {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding-bottom: 2px;
-      }
+    #currentVideoLabel {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-bottom: 2px;
+    }
 
-      img {
-        width: 23px;
-      }
+    #currentTimeLabel {
+      display: inline-block;
+      text-align: right;
+      font-weight: 500;
+      padding-top: 1px;
+    }
 
-      .button {
-        position: relative;
-        display: inline-block;
-        -webkit-transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-        transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-      }
+    img {
+      width: 23px;
+    }
 
-      .button::after {
-        z-index: -1;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
-        opacity: 0;
-        -webkit-transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-        transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-      }
+    .button {
+      position: relative;
+      display: inline-block;
+      -webkit-transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+      transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
 
-      .button:hover {
-        -webkit-transform: scale(1.10, 1.10);
-        transform: scale(1.10, 1.10);
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-      }
+    .button::after {
+      z-index: -1;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
+      opacity: 0;
+      -webkit-transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+      transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
 
-      .button:hover::after {
-        opacity: 1;
-      }
+    .button:hover {
+      -webkit-transform: scale(1.10, 1.10);
+      transform: scale(1.10, 1.10);
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
 
-      .button:active {
-        background-color: #d9d9d9;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
-      }
-    </style>
-    <script src="js/popup.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-  </head>
+    .button:hover::after {
+      opacity: 1;
+    }
 
-  <body>
-    <h5 id="currentVideoLabel"></h5>
-    <h6>
-      <span style="font-weight: normal;" id="currentTimeLabel"></span>
-      <span id="currentTrackLabel"></span>
-    </h6>
-    <table>
-      <tr>
-        <td>
-          <img class="button" src="img/previous_track.png" id="previousButton"/>
-          <img class="button" src="img/rewind.png" id="rewindButton"/>
-          <img class="button" src="img/play_pause.png" id="playOrPauseButton"/>
-          <img class="button" src="img/fast_forward.png" id="fastForwardButton"/>
-          <img class="button" src="img/next_track.png" id="nextButton"/>
-        </td>
-      </tr>
-    </table>
+    .button:active {
+      background-color: #d9d9d9;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
+    }
+  </style>
+  <script src="js/popup.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+</head>
 
-  </body>
+<body>
+<h5 id="currentTrackLabel"></h5>
+<h6>
+  <span id="currentVideoLabel"></span>
+</h6>
+
+<div style="display: grid; grid-auto-columns: 1fr">
+  <div style="grid-column: 1">
+    <span id="currentTimeLabel"></span>
+  </div>
+
+  <div style="grid-column: 2 / 4; text-align: right">
+    <img class="button" src="img/previous_track.png" id="previousButton"/>
+    <img class="button" src="img/rewind.png" id="rewindButton"/>
+    <img class="button" src="img/play_pause.png" id="playOrPauseButton"/>
+    <img class="button" src="img/fast_forward.png" id="fastForwardButton"/>
+    <img class="button" src="img/next_track.png" id="nextButton"/>
+  </div>
+</div>
+</body>
 </html>
+
