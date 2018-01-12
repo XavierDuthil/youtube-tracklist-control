@@ -9,6 +9,7 @@
         white-space: nowrap;
         max-width: 500px;
       }
+
       #currentVideoLabel {
         white-space: nowrap;
         overflow: hidden;
@@ -17,7 +18,37 @@
       }
 
       img {
-        width: 18px;
+        width: 23px;
+      }
+
+      .button {
+        position: relative;
+        display: inline-block;
+        -webkit-transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+
+      .button::after {
+        z-index: -1;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
+        opacity: 0;
+        -webkit-transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+
+      .button:hover {
+        -webkit-transform: scale(1.10, 1.10);
+        transform: scale(1.10, 1.10);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      }
+
+      .button:hover::after {
+        opacity: 1;
+      }
+
+      .button:active {
+        background-color: #d9d9d9;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
       }
     </style>
     <script src="js/popup.js"></script>
@@ -27,17 +58,17 @@
   <body>
     <h5 id="currentVideoLabel"></h5>
     <h6>
-      <span style="font-weight: normal;"id="currentTimeLabel"></span>
+      <span style="font-weight: normal;" id="currentTimeLabel"></span>
       <span id="currentTrackLabel"></span>
     </h6>
     <table>
       <tr>
         <td>
-          <img src="img/previous_track.png" id="previousButton"/>
-          <img src="img/rewind.png" id="rewindButton"/>
-          <img src="img/play_pause.png" id="playOrPauseButton"/>
-          <img src="img/fast_forward.png" id="fastForwardButton"/>
-          <img src="img/next_track.png" id="nextButton"/>
+          <img class="button" src="img/previous_track.png" id="previousButton"/>
+          <img class="button" src="img/rewind.png" id="rewindButton"/>
+          <img class="button" src="img/play_pause.png" id="playOrPauseButton"/>
+          <img class="button" src="img/fast_forward.png" id="fastForwardButton"/>
+          <img class="button" src="img/next_track.png" id="nextButton"/>
         </td>
       </tr>
     </table>
