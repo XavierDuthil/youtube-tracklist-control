@@ -1,6 +1,6 @@
 chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   var config = {
-    'refresh_time': 1000
+    'refresh_time': 200
   };
   var tabId = tab[0].id;
   var backgroundPage = chrome.extension.getBackgroundPage();
@@ -23,21 +23,27 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     backgroundPage.refreshCurrentVideo(tabId, document.getElementById("currentVideoLabel"));
     backgroundPage.refreshCurrentTrack(tabId, document.getElementById("currentTrackLabel"));
     backgroundPage.refreshCurrentTime(tabId, document.getElementById("currentTimeLabel"));
+    backgroundPage.refreshPaused(tabId, document.getElementById("playOrPauseButton"));
   }
 
   function playOrPausePressed() {
     chrome.tabs.sendMessage(tabId, "playOrPause")
+    refreshPopup()
   }
   function previousPressed() {
     chrome.tabs.sendMessage(tabId, "previous")
+    refreshPopup()
   }
   function nextPressed() {
     chrome.tabs.sendMessage(tabId, "next")
+    refreshPopup()
   }
   function rewindPressed() {
     chrome.tabs.sendMessage(tabId, "rewind")
+    refreshPopup()
   }
   function fastForwardPressed() {
     chrome.tabs.sendMessage(tabId, "fastForward")
+    refreshPopup()
   }
 });

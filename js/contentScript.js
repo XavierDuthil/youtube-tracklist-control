@@ -23,6 +23,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "getCurrentTime":
       sendResponse(getCurrentTime());
       break;
+    case "getPaused":
+      sendResponse(getPaused());
+      break;
     case "playOrPause":
       playOrPause();
       break;
@@ -67,6 +70,17 @@ function playOrPause() {
       videoElement.pause();
     }
   }
+}
+
+function getPaused() {
+  if (!videoElement) {
+    getElements();
+  }
+
+  if (videoElement) {
+    return videoElement.paused
+  }
+  return null;
 }
 
 function previous() {

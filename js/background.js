@@ -35,3 +35,15 @@ function refreshCurrentTime(tabId, currentTimeElement) {
     }
   });
 }
+
+function refreshPaused(tabId, playOrPauseButtonElement) {
+  chrome.tabs.sendMessage(tabId, "getPaused", function (paused) {
+    if (paused) {
+      playOrPauseButtonElement.setAttribute('src', 'img/play.png');
+    } else if (paused === false) {
+      playOrPauseButtonElement.setAttribute('src', 'img/pause.png');
+    } else {
+      playOrPauseButtonElement.setAttribute('src', 'img/play_pause.png');
+    }
+  });
+}
