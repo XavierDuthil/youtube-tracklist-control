@@ -32,6 +32,12 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "next":
       next();
       break;
+    case "rewind":
+      rewind();
+      break;
+    case "fastForward":
+      fastForward();
+      break;
   }
 });
 
@@ -89,6 +95,28 @@ function next() {
   }
 
   videoElement.currentTime = trackList[currentTrackNum + 1]["startTime"];
+}
+
+function rewind() {
+  if (!videoElement) {
+    getElements();
+  }
+
+  videoElement.currentTime = videoElement.currentTime - 5;
+}
+
+function fastForward() {
+  if (!videoElement) {
+    getElements();
+  }
+
+  var currentTrackNum = getCurrentTrackNum();
+  if (trackList.length === 0 || currentTrackNum === trackList.length - 1) {
+    nextButtonElement.click();
+    return;
+  }
+
+  videoElement.currentTime = videoElement.currentTime + 5;
 }
 
 function getCurrentTime() {

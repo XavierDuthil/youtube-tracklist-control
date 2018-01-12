@@ -10,6 +10,8 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   document.getElementById("playOrPauseButton").addEventListener("click", playOrPausePressed);
   document.getElementById("previousButton").addEventListener("click", previousPressed);
   document.getElementById("nextButton").addEventListener("click", nextPressed);
+  document.getElementById("rewindButton").addEventListener("click", rewindPressed);
+  document.getElementById("fastForwardButton").addEventListener("click", fastForwardPressed);
 
   function startTicker() {
     window.setInterval(function () {
@@ -31,5 +33,11 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   }
   function nextPressed() {
     chrome.tabs.sendMessage(tabId, "next")
+  }
+  function rewindPressed() {
+    chrome.tabs.sendMessage(tabId, "rewind")
+  }
+  function fastForwardPressed() {
+    chrome.tabs.sendMessage(tabId, "fastForward")
   }
 });
