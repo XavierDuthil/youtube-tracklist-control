@@ -8,7 +8,7 @@ This extension works by scanning for a timestamped tracklist in the video descri
 - Media controls (play, pause, rewind, fast-forward)
 - Go to previous/next track buttons
 
-## More to come eventually
+## More to come (eventually)
 - Settings
 - Multi tab interaction (use the media controls from any tab)
 - Support of hardware media keys
