@@ -1,6 +1,19 @@
 # Youtube Compilation Helper
 MIT Licensed Open Source extension for Google Chrome by Xavier Duthil.  
-Provides useful track-handling functionalities when watching compilation videos on Youtube.
+Provides useful functionalities when watching music-compilation videos on Youtube.  
+This extension works by scanning for a timestamped tracklist in the video description and uses it to build its own interactive tracklist.
+
+## Functionalities
+- Show current track's name
+- Media controls (play, pause, rewind, fast-forward)
+- Go to previous/next track buttons
+
+## More to come eventually
+- Settings
+- Multi tab interaction (use the media controls from any tab)
+- Support of hardware media keys
+- Discrete video progression bar
+- Automatically pop up when a compilation video is detected (configurable)
 
 ## Installation
 You can either:
