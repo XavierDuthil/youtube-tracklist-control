@@ -1,6 +1,17 @@
 var currentUrl, titleElement, videoElement, nextButtonElement, descriptionElement, trackList;
 var timestampRegex = /(\d+:)?(\d?\d):(\d\d)/;
-var otherTimestampRegex = /\s*\W{1,2}\s*(\d+:)?\d?\d:\d\d/;
+
+/*
+  TrackList an ordered array, of the form: [
+    {
+      "startTime": 0,
+      "title": "First track title",
+    }, {
+      "startTime": 162,
+      "title": "Second track title",
+    }
+  ]
+ */
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (!currentUrl || currentUrl !== location.href) {
@@ -55,7 +66,7 @@ function getCurrentVideo() {
   if (!titleElement) {
     getElements();
   }
-	return titleElement.textContent;
+  return titleElement.textContent;
 }
 
 function playOrPause() {
@@ -188,6 +199,10 @@ function buildTrackList() {
     trackList.push({"startTime": startTime, "title": trackTitle});
   }
 
+  if (trackList.length === 0) {
+    return []
+  }
+
   trackList = cleanTracklistTitles(trackList);
   return sort(trackList);
 }
@@ -199,28 +214,86 @@ function sort(trackList) {
 }
 
 function extractTrackTitle(descriptionLine, timestamp) {
-  var trackTitle = descriptionLine.replace(timestamp, "").trim();
+  return descriptionLine.replace(timestamp, "").trim();
+}
 
-  // Trim prefix
-  if (trackTitle.search(otherTimestampRegex) === 0) {
-    trackTitle = trackTitle.replace(otherTimestampRegex, "");
+function cleanTracklistTitles(trackList) {
+  trackList = trimCommonPreSuffixes(trackList);
+  return trackList;
+}
+
+// Find and remove the prefix and suffix that are common to every track titles
+function trimCommonPreSuffixes(trackList) {
+  if (!trackList || trackList.length < 1) {
+    return trackList;
+  }
+  var firstTrackTitle = trackList[0]["title"];
+
+  // Find the prefix that is common to every titles:
+  var commonPrefix = "";
+  for (var charIdx = 1; charIdx < firstTrackTitle.length; charIdx++) {
+    var testedPrefix = firstTrackTitle.substring(0, charIdx);
+
+    // Prefix to remove has to be made of special chars only
+    if (testedPrefix[0].match(/[a-zA-Z0-9]/)) {
+      break
+    }
+
+    // Determine if this new prefix is common to all titles
+    var prefixIsCommon = true;
+    for (var i in trackList) {
+      if (!trackList[i]["title"].startsWith(testedPrefix)) {
+        prefixIsCommon = false;
+        break
+      }
+    }
+
+    if (!prefixIsCommon) {
+      break
+    }
+    commonPrefix = testedPrefix;
   }
 
-  // Trim suffix
-  // TODO: Check if at the end of the string
-  // trackTitle = trackTitle.replace(otherTimestampRegex, "");
-  return trackTitle;
-}
+  // Trim this common prefix
+  if (commonPrefix !== "") {
+    for (i in trackList) {
+      trackList[i]["title"] = trackList[i]["title"].substring(commonPrefix.length)
+    }
+  }
 
-function cleanTracklistTitles(tracklist) {
-  // TODO
-  // tracklist = trimCommonPreSuffixes();
-  return tracklist;
-}
+  // Find the suffix that is common to every titles:
+  var commonSuffix = "";
+  for (charIdx = 1; charIdx < firstTrackTitle.length; charIdx++) {
+    var testedSuffix = firstTrackTitle.substr(-charIdx);
 
-// function trimCommonPreSuffixes(tracklist) {
-//
-// }
+    // Suffix to remove has to be made of special chars only
+    if (testedSuffix[testedSuffix.length - 1].match(/[a-zA-Z0-9]/) !== null) {
+      break
+    }
+
+    var suffixIsCommon = true;
+    for (i in trackList) {
+      if (!trackList[i]["title"].endsWith(testedSuffix)) {
+        suffixIsCommon = false;
+        break
+      }
+    }
+
+    if (!suffixIsCommon) {
+      break
+    }
+    commonSuffix = testedSuffix;
+  }
+
+  // Trim this common suffix
+  if (commonSuffix !== "") {
+    for (i in trackList) {
+      trackList[i]["title"] = trackList[i]["title"].substring(0, trackList[i]["title"].length - commonSuffix.length)
+    }
+  }
+
+  return trackList
+}
 
 function parseTime(hours, minutes, seconds) {
   hours = parseInt(hours) || 0;
