@@ -4,6 +4,8 @@ MIT Licensed Open Source extension for Google Chrome by Xavier Duthil.
 This extension provides useful functionalities when watching music-compilation videos on Youtube.  
 It works by scanning for a timestamped tracklist in the video description and uses it to build its own interactive tracklist.
 
+![Screenshot](img/screenshot.png)
+
 ## Functionalities
 - Show current track's name
 - Media controls (play, pause, rewind, fast-forward)
