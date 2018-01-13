@@ -1,5 +1,6 @@
 # Youtube Compilation Helper
-MIT Licensed Open Source extension for Google Chrome that provides useful track handling functionalities when watching compilation videos on Youtube.
+MIT Licensed Open Source extension for Google Chrome by Xavier Duthil.  
+Provides useful track-handling functionalities when watching compilation videos on Youtube.
 
 ## Installation
 You can either:
