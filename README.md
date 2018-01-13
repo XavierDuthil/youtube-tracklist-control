@@ -1,4 +1,4 @@
-# youtube-compilation-helper
+# Youtube Compilation Helper
 MIT Licensed Open Source extension for Google Chrome that provides useful track handling functionalities when watching compilation videos on Youtube.
 
 ## Installation
