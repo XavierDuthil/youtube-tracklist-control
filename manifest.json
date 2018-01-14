@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Youtube compilation helper",
-  "description": "Youtube Compilation Helper provides useful functionalities when watching music compilation/album videos on Youtube.",
+  "description": "Youtube Compilation Helper provides useful tracklist-handling functionalities when watching music compilation/album videos on Youtube.",
   "version": "1.0",
 
   "browser_action": {
