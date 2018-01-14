@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Youtube compilation helper",
-  "description": "This extension provides some tools while watching a Youtube compilation video which contains the list of tracks in the description",
+  "description": "Youtube Compilation Helper provides useful functionalities when watching music compilation/album videos on Youtube.",
   "version": "1.0",
 
   "browser_action": {
@@ -11,7 +11,7 @@
       "38": "img/icon38.png"
     },
     "default_popup": "popup.html",
-    "default_title": "Youtube compilation helper"
+    "default_title": "Youtube Compilation Helper"
   },
   "icons": {
     "16": "img/icon16.png",
