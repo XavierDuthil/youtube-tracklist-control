@@ -1,9 +1,10 @@
 {
   "manifest_version": 2,
 
-  "name": "Youtube compilation helper",
-  "description": "Provides useful tracklist-handling functionalities when watching music compilation/album videos on Youtube.",
   "version": "1.0",
+  "name": "__MSG_appName__",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
 
   "browser_action": {
     "default_icon": {
@@ -13,19 +14,23 @@
     "default_popup": "popup.html",
     "default_title": "Youtube Compilation Helper"
   },
+
   "icons": {
     "16": "img/icon16.png",
     "48": "img/icon48.png",
     "128": "img/icon128.png"
   },
+
   "background": {
     "scripts": ["js/background.js"]
   },
+
   "permissions": [
     "activeTab",
     "tabs",
     "background"
   ],
+
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/watch?v=*"],
