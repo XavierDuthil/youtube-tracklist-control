@@ -1,4 +1,4 @@
-var currentUrl, titleElement, videoElement, nextButtonElement, descriptionElement, trackList;
+var currentUrl, titleElement, videoElement, nextButtonElement, descriptionElement, tracklist;
 var timestampRegex = /(\d+:)?(\d?\d):(\d\d)/;
 
 /*
@@ -15,7 +15,7 @@ var timestampRegex = /(\d+:)?(\d?\d):(\d\d)/;
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (!currentUrl || currentUrl !== location.href) {
-    trackList = [];
+    tracklist = [];
     getElements();
     currentUrl = location.href;
   }
@@ -25,7 +25,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       sendResponse(getCurrentVideo());
       break;
     case "getCurrentTrack":
-      if (trackList.length === 0) {
+      if (tracklist.length === 0) {
         sendResponse("");
       }
       var currentTrack = getCurrentTrack();
@@ -100,12 +100,12 @@ function previous() {
   }
 
   var currentTrackNum = getCurrentTrackNum();
-  if (trackList.length === 0 || currentTrackNum === 0) {
+  if (tracklist.length === 0 || currentTrackNum === 0) {
     videoElement.currentTime = 0;
     return;
   }
 
-  videoElement.currentTime = trackList[currentTrackNum - 1]["startTime"];
+  videoElement.currentTime = tracklist[currentTrackNum - 1]["startTime"];
 }
 
 function next() {
@@ -114,12 +114,12 @@ function next() {
   }
 
   var currentTrackNum = getCurrentTrackNum();
-  if (trackList.length === 0 || currentTrackNum === trackList.length - 1) {
+  if (tracklist.length === 0 || currentTrackNum === tracklist.length - 1) {
     nextButtonElement.click();
     return;
   }
 
-  videoElement.currentTime = trackList[currentTrackNum + 1]["startTime"];
+  videoElement.currentTime = tracklist[currentTrackNum + 1]["startTime"];
 }
 
 function rewind() {
@@ -136,7 +136,7 @@ function fastForward() {
   }
 
   var currentTrackNum = getCurrentTrackNum();
-  if (trackList.length === 0 || currentTrackNum === trackList.length - 1) {
+  if (tracklist.length === 0 || currentTrackNum === tracklist.length - 1) {
     nextButtonElement.click();
     return;
   }
@@ -155,16 +155,16 @@ function getCurrentTrackNum() {
   if (!videoElement) {
     getElements();
   }
-  if (trackList.length === 0) {
+  if (tracklist.length === 0) {
     getElements();
-    trackList = buildTrackList();
+    tracklist = buildTrackList();
   }
 
   var currentTime = getCurrentTime();
   var currentTrackNum = 0;
 
-  for (var trackNum in trackList) {
-    var trackStartTime = parseInt(trackList[trackNum]["startTime"]);
+  for (var trackNum in tracklist) {
+    var trackStartTime = parseInt(tracklist[trackNum]["startTime"]);
     if (trackStartTime > currentTime) {
       break;
     }
@@ -174,14 +174,14 @@ function getCurrentTrackNum() {
 }
 
 function getCurrentTrack() {
-  return trackList[getCurrentTrackNum()];
+  return tracklist[getCurrentTrackNum()];
 }
 
 function buildTrackList() {
   if (!descriptionElement) {
     getElements();
   }
-  var trackList = [];
+  var tracklist = [];
   var descriptionStr = descriptionElement.textContent;
   var descriptionLines = descriptionStr.split("\n");
 
@@ -196,19 +196,19 @@ function buildTrackList() {
     var trackTitle = extractTrackTitle(line, timestamp);
 
     var startTime = parseTime(regexResult[1], regexResult[2], regexResult[3]);
-    trackList.push({"startTime": startTime, "title": trackTitle});
+    tracklist.push({"startTime": startTime, "title": trackTitle});
   }
 
-  if (trackList.length === 0) {
+  if (tracklist.length === 0) {
     return []
   }
 
-  trackList = cleanTracklistTitles(trackList);
-  return sort(trackList);
+  tracklist = cleanTracklistTitles(tracklist);
+  return sort(tracklist);
 }
 
-function sort(trackList) {
-  return trackList.sort(function (a, b) {
+function sort(tracklist) {
+  return tracklist.sort(function (a, b) {
     return a["startTime"] - b["startTime"];
   });
 }
@@ -217,17 +217,17 @@ function extractTrackTitle(descriptionLine, timestamp) {
   return descriptionLine.replace(timestamp, "").trim();
 }
 
-function cleanTracklistTitles(trackList) {
-  trackList = trimCommonPreSuffixes(trackList);
-  return trackList;
+function cleanTracklistTitles(tracklist) {
+  tracklist = trimCommonPreSuffixes(tracklist);
+  return tracklist;
 }
 
 // Find and remove the prefix and suffix that are common to every track titles
-function trimCommonPreSuffixes(trackList) {
-  if (!trackList || trackList.length < 1) {
-    return trackList;
+function trimCommonPreSuffixes(tracklist) {
+  if (!tracklist || tracklist.length < 1) {
+    return tracklist;
   }
-  var firstTrackTitle = trackList[0]["title"];
+  var firstTrackTitle = tracklist[0]["title"];
 
   // Find the prefix that is common to every titles:
   var commonPrefix = "";
@@ -241,8 +241,8 @@ function trimCommonPreSuffixes(trackList) {
 
     // Determine if this new prefix is common to all titles
     var prefixIsCommon = true;
-    for (var i in trackList) {
-      if (!trackList[i]["title"].startsWith(testedPrefix)) {
+    for (var i in tracklist) {
+      if (!tracklist[i]["title"].startsWith(testedPrefix)) {
         prefixIsCommon = false;
         break
       }
@@ -256,8 +256,8 @@ function trimCommonPreSuffixes(trackList) {
 
   // Trim this common prefix
   if (commonPrefix !== "") {
-    for (i in trackList) {
-      trackList[i]["title"] = trackList[i]["title"].substring(commonPrefix.length)
+    for (i in tracklist) {
+      tracklist[i]["title"] = tracklist[i]["title"].substring(commonPrefix.length)
     }
   }
 
@@ -272,8 +272,8 @@ function trimCommonPreSuffixes(trackList) {
     }
 
     var suffixIsCommon = true;
-    for (i in trackList) {
-      if (!trackList[i]["title"].endsWith(testedSuffix)) {
+    for (i in tracklist) {
+      if (!tracklist[i]["title"].endsWith(testedSuffix)) {
         suffixIsCommon = false;
         break
       }
@@ -287,12 +287,12 @@ function trimCommonPreSuffixes(trackList) {
 
   // Trim this common suffix
   if (commonSuffix !== "") {
-    for (i in trackList) {
-      trackList[i]["title"] = trackList[i]["title"].substring(0, trackList[i]["title"].length - commonSuffix.length)
+    for (i in tracklist) {
+      tracklist[i]["title"] = tracklist[i]["title"].substring(0, tracklist[i]["title"].length - commonSuffix.length)
     }
   }
 
-  return trackList
+  return tracklist
 }
 
 function parseTime(hours, minutes, seconds) {
