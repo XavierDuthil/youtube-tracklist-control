@@ -1,25 +1,33 @@
-function refreshCurrentVideo(tabId, currentVideoElement) {
+function refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
   chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
     if (response) {
-      currentVideoElement.textContent = response;
+      currentVideoLabel.textContent = response;
+      currentTrackLabel.display = "block";
+      refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel)
     } else {
-      currentVideoElement.textContent = "Current video";
+      currentVideoLabel.textContent = "__MSG_noVideo__";
+      currentTrackLabel.setAttribute("style", "display: none");
+      noTrackLabel.setAttribute("style", "display: none");
     }
   });
 }
 
-function refreshCurrentTrack(tabId, currentTrackElement) {
+function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
   chrome.tabs.sendMessage(tabId, "getCurrentTrack", function (response) {
     if (response) {
-      currentTrackElement.textContent = response;
-      currentTrackElement.display = "Block";
+      currentVideoLabel.className = "secondaryTitle";
+      currentTrackLabel.setAttribute("style", "display: block");
+      currentTrackLabel.textContent = response;
+      noTrackLabel.setAttribute("style", "display: none");
     } else {
-      currentTrackElement.display = "None";
+      currentVideoLabel.className = "primaryTitle";
+      currentTrackLabel.setAttribute("style", "display: none");
+      noTrackLabel.setAttribute("style", "display: inline");
     }
   });
 }
 
-function refreshCurrentTime(tabId, currentTimeElement) {
+function refreshCurrentTime(tabId, currentTimeLabel) {
   chrome.tabs.sendMessage(tabId, "getCurrentTime", function (response) {
     if (response) {
       var seconds = parseInt(response);
@@ -29,21 +37,21 @@ function refreshCurrentTime(tabId, currentTimeElement) {
       var dateISO = date.toISOString();
       var timeStr = seconds >= 3600 ? dateISO.substr(11, 8) : dateISO.substr(14, 5);
 
-      currentTimeElement.textContent = "[" + timeStr + "]";
+      currentTimeLabel.textContent = "[" + timeStr + "]";
     } else {
-      currentTimeElement.display = "None";
+      currentTimeLabel.display = "None";
     }
   });
 }
 
-function refreshPaused(tabId, playOrPauseButtonElement) {
+function refreshPaused(tabId, playOrPauseButtonLabel) {
   chrome.tabs.sendMessage(tabId, "getPaused", function (paused) {
     if (paused) {
-      playOrPauseButtonElement.setAttribute('src', 'img/play.png');
+      playOrPauseButtonLabel.setAttribute('src', 'img/play.png');
     } else if (paused === false) {
-      playOrPauseButtonElement.setAttribute('src', 'img/pause.png');
+      playOrPauseButtonLabel.setAttribute('src', 'img/pause.png');
     } else {
-      playOrPauseButtonElement.setAttribute('src', 'img/play_pause.png');
+      playOrPauseButtonLabel.setAttribute('src', 'img/play_pause.png');
     }
   });
 }

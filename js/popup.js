@@ -7,24 +7,32 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   refreshPopup();
   startTicker();
 
-  document.getElementById("playOrPauseButton").addEventListener("click", playOrPausePressed);
-  document.getElementById("previousButton").addEventListener("click", previousPressed);
-  document.getElementById("nextButton").addEventListener("click", nextPressed);
-  document.getElementById("rewindButton").addEventListener("click", rewindPressed);
-  document.getElementById("fastForwardButton").addEventListener("click", fastForwardPressed);
-
   function startTicker() {
     window.setInterval(function () {
       refreshPopup();
     }, config["refresh_time"]);
   }
 
+  var currentVideoLabel = document.getElementById("currentVideoLabel");
+  var currentTrackLabel = document.getElementById("currentTrackLabel");
+  var noTrackLabel = document.getElementById("noTrackLabel");
+  var currentTimeLabel = document.getElementById("currentTimeLabel");
+  var playOrPauseButton = document.getElementById("playOrPauseButton");
+
   function refreshPopup() {
-    backgroundPage.refreshCurrentVideo(tabId, document.getElementById("currentVideoLabel"));
-    backgroundPage.refreshCurrentTrack(tabId, document.getElementById("currentTrackLabel"));
-    backgroundPage.refreshCurrentTime(tabId, document.getElementById("currentTimeLabel"));
-    backgroundPage.refreshPaused(tabId, document.getElementById("playOrPauseButton"));
+    if (!currentVideoLabel) {
+      return;
+    }
+    backgroundPage.refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel);
+    backgroundPage.refreshCurrentTime(tabId, currentTimeLabel);
+    backgroundPage.refreshPaused(tabId, playOrPauseButton);
   }
+
+  document.getElementById("playOrPauseButton").addEventListener("click", playOrPausePressed);
+  document.getElementById("previousButton").addEventListener("click", previousPressed);
+  document.getElementById("nextButton").addEventListener("click", nextPressed);
+  document.getElementById("rewindButton").addEventListener("click", rewindPressed);
+  document.getElementById("fastForwardButton").addEventListener("click", fastForwardPressed);
 
   function playOrPausePressed() {
     chrome.tabs.sendMessage(tabId, "playOrPause")

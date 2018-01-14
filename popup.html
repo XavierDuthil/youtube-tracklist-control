@@ -29,6 +29,18 @@
       padding-top: 1px;
     }
 
+    .primaryTitle {
+      font-size: 1.25rem;
+    }
+
+    .secondaryTitle {
+      font-size: 1rem;
+    }
+
+    .info {
+      font-size: 0.75rem;
+    }
+
     img {
       width: 23px;
     }
@@ -68,10 +80,9 @@
 </head>
 
 <body>
-<h5 id="currentTrackLabel"></h5>
-<h6>
-  <span id="currentVideoLabel"></span>
-</h6>
+<h5 id="currentTrackLabel" class="primaryTitle"></h5>
+<h5 id="currentVideoLabel" class="secondaryTitle"></h5>
+<p id="noTrackLabel" class="info">__MSG_noTracklist__</p>
 
 <div style="display: grid; grid-auto-columns: 1fr">
   <div style="grid-column: 1">
