@@ -4,5 +4,11 @@
   },
   "appDesc": {
     "message": "Provides useful tracklist-handling features when watching music compilation/album videos on Youtube."
+  },
+  "noVideo": {
+    "message": "No Youtube video detected"
+  },
+  "noTracklist": {
+    "message": "No tracklist detected"
   }
 }

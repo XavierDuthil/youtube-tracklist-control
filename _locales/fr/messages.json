@@ -4,5 +4,11 @@
   },
   "appDesc": {
     "message": "Propose une gestion de la tracklist lors de la lecture de compilations / albums de musique sur Youtube."
+  },
+  "noVideo": {
+    "message": "Aucune vidéo Youtube détectée"
+  },
+  "noTracklist": {
+    "message": "Aucune tracklist detectée"
   }
 }

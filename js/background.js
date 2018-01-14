@@ -5,7 +5,7 @@ function refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel
       currentTrackLabel.display = "block";
       refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel)
     } else {
-      currentVideoLabel.textContent = "__MSG_noVideo__";
+      currentVideoLabel.textContent = chrome.i18n.getMessage("noVideo");
       currentTrackLabel.setAttribute("style", "display: none");
       noTrackLabel.setAttribute("style", "display: none");
     }
@@ -23,6 +23,7 @@ function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrac
       currentVideoLabel.className = "primaryTitle";
       currentTrackLabel.setAttribute("style", "display: none");
       noTrackLabel.setAttribute("style", "display: inline");
+      noTrackLabel.textContent = chrome.i18n.getMessage("noTracklist");
     }
   });
 }

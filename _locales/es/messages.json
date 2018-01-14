@@ -4,5 +4,11 @@
   },
   "appDesc": {
     "message": "Ofrece una gestión de la lista de pistas cuando se reproducen compilaciones / álbumes de música en Youtube."
+  },
+  "noVideo": {
+    "message": "No se detectó ningún video de Youtube"
+  },
+  "noTracklist": {
+    "message": "No se detectó lista de seguimiento"
   }
 }

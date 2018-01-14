@@ -4,5 +4,11 @@
   },
   "appDesc": {
     "message": "Bietet ein Tracklisten-Management beim Abspielen von Compilations / Musikalben auf Youtube."
+  },
+  "noVideo": {
+    "message": "Kein Youtube-Video gefunden"
+  },
+  "noTracklist": {
+    "message": "Keine Trackliste gefunden"
   }
 }

@@ -4,5 +4,11 @@
   },
   "appDesc": {
     "message": "Offre una gestione della tracklist durante la riproduzione di compilation / album musicali su Youtube."
+  },
+  "noVideo": {
+    "message": "Nessun video Youtube rilevato"
+  },
+  "noTracklist": {
+    "message": "Nessuna tracklist rilevata"
   }
 }
