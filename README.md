@@ -22,6 +22,6 @@ It works by scanning for a timestamped tracklist in the video description and us
 
 ## Installation
 You can either:
-- Install it from the Google Chrome Webstore (link to come)
+- Install it from the [Google Chrome Webstore](https://chrome.google.com/webstore/detail/youtube-compilation-helpe/acdincmjdbdcndnidcmajippglnbplhk/related?hl=fr)
 - Download the source, then in your Google Chrome's extension tab (URI: `chrome://extensions/`) use the "Load unpacked extension" button to select the project's folder
-- Download the package (file to come), then drag & drop this file into your Google Chrome's extension tab (URI: `chrome://extensions/`)
+- Download the [package](build/youtube_compilation_helper.crx), then drag & drop this file into your Google Chrome's extension tab (URI: `chrome://extensions/`)
