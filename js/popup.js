@@ -18,6 +18,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   var noTrackLabel = document.getElementById("noTrackLabel");
   var currentTimeLabel = document.getElementById("currentTimeLabel");
   var playOrPauseButton = document.getElementById("playOrPauseButton");
+  var tracklistTable = document.getElementById("tracklistTable");
 
   function refreshPopup() {
     if (!currentVideoLabel) {
@@ -25,7 +26,8 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     }
     backgroundPage.refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel);
     backgroundPage.refreshCurrentTime(tabId, currentTimeLabel);
-    backgroundPage.refreshPaused(tabId, playOrPauseButton);
+    backgroundPage.refreshPaused(tabId, playOrPauseButton, tracklistTable);
+    backgroundPage.refreshTracklist(tabId, tracklistTable);
   }
 
   document.getElementById("playOrPauseButton").addEventListener("click", playOrPausePressed);
@@ -35,23 +37,23 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   document.getElementById("fastForwardButton").addEventListener("click", fastForwardPressed);
 
   function playOrPausePressed() {
-    chrome.tabs.sendMessage(tabId, "playOrPause")
+    chrome.tabs.sendMessage(tabId, "playOrPause");
     refreshPopup()
   }
   function previousPressed() {
-    chrome.tabs.sendMessage(tabId, "previous")
+    chrome.tabs.sendMessage(tabId, "previous");
     refreshPopup()
   }
   function nextPressed() {
-    chrome.tabs.sendMessage(tabId, "next")
+    chrome.tabs.sendMessage(tabId, "next");
     refreshPopup()
   }
   function rewindPressed() {
-    chrome.tabs.sendMessage(tabId, "rewind")
+    chrome.tabs.sendMessage(tabId, "rewind");
     refreshPopup()
   }
   function fastForwardPressed() {
-    chrome.tabs.sendMessage(tabId, "fastForward")
+    chrome.tabs.sendMessage(tabId, "fastForward");
     refreshPopup()
   }
 });

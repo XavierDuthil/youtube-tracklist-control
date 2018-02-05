@@ -39,8 +39,9 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
       var timeStr = seconds >= 3600 ? dateISO.substr(11, 8) : dateISO.substr(14, 5);
 
       currentTimeLabel.textContent = "[" + timeStr + "]";
+      tracklistTable.setAttribute("style", "display: inline-block");
     } else {
-      currentTimeLabel.display = "None";
+      tracklistTable.setAttribute("style", "display: none");
     }
   });
 }
@@ -53,6 +54,26 @@ function refreshPaused(tabId, playOrPauseButtonLabel) {
       playOrPauseButtonLabel.setAttribute('src', 'img/pause.png');
     } else {
       playOrPauseButtonLabel.setAttribute('src', 'img/play_pause.png');
+    }
+  });
+}
+
+function refreshTracklist(tabId, tracklistTable) {
+  chrome.tabs.sendMessage(tabId, "getTracklist", function (tracklist) {
+    if (tracklist) {
+      var tableContent = "<tbody><tr><th>N#</th><th>Title</th></tr>";
+      for (var trackIdx in tracklist) {
+        var trackInfo = tracklist[trackIdx];
+        var trackNum = parseInt(trackIdx) + 1;
+        trackNum = (trackNum < 10) ? ("0" + trackNum) : trackNum;
+        tableContent += "<tr><td>" + trackNum + "</td><td>" + trackInfo["title"] + "</td></tr>";
+      }
+
+      tableContent += "</tbody>";
+      tracklistTable.innerHTML = tableContent;
+      tracklistTable.setAttribute("style", "display: block");
+    } else {
+      tracklistTable.setAttribute("style", "display: none");
     }
   });
 }
