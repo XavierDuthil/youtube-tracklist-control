@@ -2,7 +2,7 @@ var currentUrl, titleElement, videoElement, nextButtonElement, descriptionElemen
 var timestampRegex = /(\d+:)?(\d?\d):(\d\d)/;
 
 /*
-  TrackList an ordered array, of the form: [
+  TrackList is an ordered array, of the form: [
     {
       "startTime": 0,
       "title": "First track title",
@@ -37,6 +37,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "getPaused":
       sendResponse(getPaused());
       break;
+    case "getTracklist":
+      sendResponse(getTracklist());
+      break;
     case "playOrPause":
       playOrPause();
       break;
@@ -69,6 +72,21 @@ function getCurrentVideo() {
   return titleElement.textContent;
 }
 
+function getPaused() {
+  if (!videoElement) {
+    getElements();
+  }
+
+  if (videoElement) {
+    return videoElement.paused
+  }
+  return null;
+}
+
+function getTracklist() {
+  return tracklist;
+}
+
 function playOrPause() {
   if (!videoElement) {
     getElements();
@@ -83,24 +101,13 @@ function playOrPause() {
   }
 }
 
-function getPaused() {
-  if (!videoElement) {
-    getElements();
-  }
-
-  if (videoElement) {
-    return videoElement.paused
-  }
-  return null;
-}
-
 function previous() {
   if (!videoElement) {
     getElements();
   }
 
   var currentTrackNum = getCurrentTrackNum();
-  if (tracklist.length === 0 || currentTrackNum === 0) {
+  if (tracklist.length === 0 || currentTrackNum === 0) {
     videoElement.currentTime = 0;
     return;
   }
@@ -114,7 +121,7 @@ function next() {
   }
 
   var currentTrackNum = getCurrentTrackNum();
-  if (tracklist.length === 0 || currentTrackNum === tracklist.length - 1) {
+  if (tracklist.length === 0 || currentTrackNum === tracklist.length - 1) {
     nextButtonElement.click();
     return;
   }
@@ -136,7 +143,7 @@ function fastForward() {
   }
 
   var currentTrackNum = getCurrentTrackNum();
-  if (tracklist.length === 0 || currentTrackNum === tracklist.length - 1) {
+  if (tracklist.length === 0 || currentTrackNum === tracklist.length - 1) {
     nextButtonElement.click();
     return;
   }
