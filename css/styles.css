@@ -65,3 +65,18 @@ img {
     background-color: #d9d9d9;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
 }
+
+#tracklistContainer {
+    margin-top: 10px;
+    overflow: auto;
+    max-height: 200px;
+    font-size: 9pt;
+}
+
+#tracklistTable {
+    width: 100%;
+}
+
+#tracklistTable th, #tracklistTable td {
+    padding: 2px 5px;
+}
