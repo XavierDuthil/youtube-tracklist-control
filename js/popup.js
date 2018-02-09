@@ -4,6 +4,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   };
   var tabId = tab[0].id;
   var backgroundPage = chrome.extension.getBackgroundPage();
+  backgroundPage.purgeCache();
   refreshPopup();
   startTicker();
 
