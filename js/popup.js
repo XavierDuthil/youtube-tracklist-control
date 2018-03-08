@@ -4,10 +4,18 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   };
   var tabId = tab[0].id;
   var backgroundPage = chrome.extension.getBackgroundPage();
-  backgroundPage.purgeCache();
+  var savedURL;
+  var currentURL;
+
+  chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
+    if (savedURL && tabs.length)
+      savedURL = tabs[0].url;
+  });
+
   refreshPopup();
   startTicker();
 
+  // TODO: Fix no video detected on extension installation
   function startTicker() {
     window.setInterval(function () {
       refreshPopup();
@@ -25,10 +33,21 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     if (!currentVideoLabel) {
       return;
     }
+
+    // Refresh tracklist only if URL has changed
+    chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
+      if (tabs[0] && tabs[0].url === savedURL) {
+        return;
+      }
+
+      savedURL = tabs[0] ? tabs[0].url : "";
+      backgroundPage.purgeCache();
+      backgroundPage.refreshTracklist(tabId, tracklistTable);
+    });
+
     backgroundPage.refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel);
     backgroundPage.refreshCurrentTime(tabId, currentTimeLabel);
     backgroundPage.refreshPaused(tabId, playOrPauseButton);
-    backgroundPage.refreshTracklist(tabId, tracklistTable);
   }
 
   document.getElementById("playOrPauseButton").addEventListener("click", playOrPausePressed);
