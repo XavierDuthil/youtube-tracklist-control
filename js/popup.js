@@ -27,7 +27,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     }
     backgroundPage.refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel);
     backgroundPage.refreshCurrentTime(tabId, currentTimeLabel);
-    backgroundPage.refreshPaused(tabId, playOrPauseButton, tracklistTable);
+    backgroundPage.refreshPaused(tabId, playOrPauseButton);
     backgroundPage.refreshTracklist(tabId, tracklistTable);
   }
 

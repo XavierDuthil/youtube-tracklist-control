@@ -65,9 +65,9 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
       var timeStr = seconds >= 3600 ? dateISO.substr(11, 8) : dateISO.substr(14, 5);
 
       currentTimeLabel.textContent = "[" + timeStr + "]";
-      tracklistTable.setAttribute("style", "display: inline-block");
+      currentTimeLabel.setAttribute("style", "display: inline-block");
     } else {
-      tracklistTable.setAttribute("style", "display: none");
+      currentTimeLabel.setAttribute("style", "display: none");
     }
   });
 }
