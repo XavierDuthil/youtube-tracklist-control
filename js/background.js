@@ -5,7 +5,6 @@ var getPausedCache = null;
 var getTracklistCache = null;
 
 function purgeCache() {
-  console.log("CAHCE PURGED")
   getCurrentVideoCache = null;
   getCurrentTrackCache = null;
   getCurrentTimeCache = null;
@@ -15,8 +14,10 @@ function purgeCache() {
 
 function refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
   chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
-    if (getCurrentVideoCache !== null && getCurrentVideoCache === response)
+    if (getCurrentVideoCache !== null && getCurrentVideoCache === response) {
+      refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel)
       return;
+    }
     getCurrentVideoCache = response;
 
     if (response) {
@@ -91,7 +92,6 @@ function refreshPaused(tabId, playOrPauseButtonLabel) {
 
 function refreshTracklist(tabId, tracklistTable) {
   chrome.tabs.sendMessage(tabId, "getTracklist", function (tracklist) {
-    console.log("tracklist: "+ tracklist)
     if (getTracklistCache !== null && JSON.stringify(getTracklistCache) === JSON.stringify(tracklist))
       return;
     getTracklistCache = tracklist;

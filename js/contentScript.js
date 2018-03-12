@@ -26,10 +26,10 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       break;
     case "getCurrentTrack":
       if (tracklist.length === 0) {
-        sendResponse("");
+        getElements();
+        tracklist = buildTrackList();
       }
-      var currentTrack = getCurrentTrack();
-      sendResponse(currentTrack ? currentTrack["title"] : "");
+      sendResponse(getCurrentTrackTitle());
       break;
     case "getCurrentTime":
       sendResponse(getCurrentTime());
@@ -38,7 +38,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       sendResponse(getPaused());
       break;
     case "getTracklist":
-      sendResponse(getTracklist());
+      if (tracklist.length === 0) {
+        getElements();
+        tracklist = buildTrackList();
+      }
+      sendResponse(tracklist);
       break;
     case "playOrPause":
       playOrPause();
@@ -69,7 +73,7 @@ function getCurrentVideo() {
   if (!titleElement) {
     getElements();
   }
-  return titleElement.textContent;
+  return titleElement.textContent || null;
 }
 
 function getPaused() {
@@ -81,10 +85,6 @@ function getPaused() {
     return videoElement.paused
   }
   return null;
-}
-
-function getTracklist() {
-  return tracklist;
 }
 
 function playOrPause() {
@@ -181,7 +181,12 @@ function getCurrentTrackNum() {
 }
 
 function getCurrentTrack() {
-  return tracklist[getCurrentTrackNum()];
+  return tracklist[getCurrentTrackNum()] || null;
+}
+
+function getCurrentTrackTitle() {
+  var currentTrack = getCurrentTrack();
+  return currentTrack ? currentTrack["title"] : null
 }
 
 function buildTrackList() {
