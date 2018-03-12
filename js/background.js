@@ -1,24 +1,24 @@
-var getCurrentVideoCache = null;
-var getCurrentTrackCache = null;
-var getCurrentTimeCache = null;
-var getPausedCache = null;
-var getTracklistCache = null;
+var currentVideoCache = null;
+var currentTrackCache = null;
+var currentTimeCache = null;
+var pausedCache = null;
+var tracklistCache = null;
 
 function purgeCache() {
-  getCurrentVideoCache = null;
-  getCurrentTrackCache = null;
-  getCurrentTimeCache = null;
-  getPausedCache = null;
-  getTracklistCache = null;
+  currentVideoCache = null;
+  currentTrackCache = null;
+  currentTimeCache = null;
+  pausedCache = null;
+  tracklistCache = null;
 }
 
 function refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
   chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
-    if (getCurrentVideoCache !== null && getCurrentVideoCache === response) {
+    if (currentVideoCache !== null && currentVideoCache === response) {
       refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel)
       return;
     }
-    getCurrentVideoCache = response;
+    currentVideoCache = response;
 
     if (response) {
       currentVideoLabel.textContent = response;
@@ -34,9 +34,9 @@ function refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel
 
 function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
   chrome.tabs.sendMessage(tabId, "getCurrentTrack", function (response) {
-    if (getCurrentTrackCache !== null && getCurrentTrackCache === response)
+    if (currentTrackCache !== null && currentTrackCache === response)
       return;
-    getCurrentTrackCache = response;
+    currentTrackCache = response;
 
     if (response) {
       currentVideoLabel.className = "secondaryTitle";
@@ -57,9 +57,9 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
     if (response) {
       var seconds = parseInt(response);
 
-      if (getCurrentTimeCache !== null && getCurrentTimeCache === seconds)
+      if (currentTimeCache !== null && currentTimeCache === seconds)
         return;
-      getCurrentTimeCache = seconds;
+      currentTimeCache = seconds;
 
       var date = new Date(null);
       date.setSeconds(seconds);
@@ -76,9 +76,9 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
 
 function refreshPaused(tabId, playOrPauseButtonLabel) {
   chrome.tabs.sendMessage(tabId, "getPaused", function (paused) {
-    if (getPausedCache !== null && getPausedCache === paused)
+    if (pausedCache !== null && pausedCache === paused)
       return;
-    getPausedCache = paused;
+    pausedCache = paused;
 
     if (paused) {
       playOrPauseButtonLabel.setAttribute('src', 'img/play.png');
@@ -92,9 +92,9 @@ function refreshPaused(tabId, playOrPauseButtonLabel) {
 
 function refreshTracklist(tabId, tracklistTable) {
   chrome.tabs.sendMessage(tabId, "getTracklist", function (tracklist) {
-    if (getTracklistCache !== null && JSON.stringify(getTracklistCache) === JSON.stringify(tracklist))
+    if (tracklistCache !== null && JSON.stringify(tracklistCache) === JSON.stringify(tracklist))
       return;
-    getTracklistCache = tracklist;
+    tracklistCache = tracklist;
 
     if (tracklist) {
       var tableContent = "<tbody><tr><th>N#</th><th>Title</th></tr>";
