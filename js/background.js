@@ -7,6 +7,7 @@ var currentTrackStartTime = null;
 var currentTrackDuration = null;
 var trackProgressBarElement = null;
 var trackProgressBarElement2 = null;
+var currentKeyboardShortcutsListener = null;
 
 function purgeCache() {
   currentVideoCache = null;
@@ -168,6 +169,27 @@ function refreshTracklist(tabId, tracklistTable) {
       tracklistTable.setAttribute("style", "display: none");
     }
   });
+}
+
+// Reset the keyboard shortcuts and activate them for the given tab
+function activateKeyboardShortcuts(tabId) {
+  if (currentKeyboardShortcutsListener) {
+    chrome.commands.onCommand.removeListener(currentKeyboardShortcutsListener);
+  }
+  currentKeyboardShortcutsListener = function(command) {
+    switch (command) {
+      case "cmd_play_pause":
+        chrome.tabs.sendMessage(tabId, "playOrPause");
+        break;
+      case "cmd_previous_track":
+        chrome.tabs.sendMessage(tabId, "previous");
+        break;
+      case "cmd_next_track":
+        chrome.tabs.sendMessage(tabId, "next");
+        break;
+    }
+  };
+  chrome.commands.onCommand.addListener(currentKeyboardShortcutsListener);
 }
 
 // Inject contentScript on upgrade/install into all youtube tabs
