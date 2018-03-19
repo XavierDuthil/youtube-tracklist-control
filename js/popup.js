@@ -15,7 +15,6 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   refreshPopup();
   startTicker();
 
-  // TODO: Fix no video detected on extension installation
   function startTicker() {
     window.setInterval(function () {
       refreshPopup();

@@ -28,7 +28,9 @@
   "permissions": [
     "activeTab",
     "tabs",
-    "background"
+    "background",
+    "http://*.youtube.com/*",
+    "https://*.youtube.com/*"
   ],
 
   "content_scripts": [

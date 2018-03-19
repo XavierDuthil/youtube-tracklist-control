@@ -113,3 +113,32 @@ function refreshTracklist(tabId, tracklistTable) {
     }
   });
 }
+
+// Inject contentScript on upgrade/install into all youtube tabs
+chrome.windows.getAll({
+  populate: true
+}, function (windows) {
+  var i = 0, w = windows.length, currentWindow;
+  for( ; i < w; i++ ) {
+    currentWindow = windows[i];
+    var j = 0, t = currentWindow.tabs.length, currentTab;
+    for( ; j < t; j++ ) {
+      currentTab = currentWindow.tabs[j];
+      // Proceed only with youtube pages
+      if(currentTab.url.match(/youtube.com/gi) ) {
+        injectIntoTab(currentTab);
+      }
+    }
+  }
+});
+
+// Inject contentScript
+var injectIntoTab = function (tab) {
+  var scripts = chrome.runtime.getManifest().content_scripts[0].js;
+  var i = 0, s = scripts.length;
+  for( ; i < s; i++ ) {
+    chrome.tabs.executeScript(tab.id, {
+      file: scripts[i]
+    });
+  }
+}
