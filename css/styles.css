@@ -66,6 +66,25 @@ img {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
 }
 
+#tracklistToggleButton {
+    grid-column: 2;
+    height: 15px;
+    border: solid grey 1px;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+#tracklistToggleButton:hover {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+#tracklistToggleButton span {
+    display: block;
+    text-align: center;
+    line-height: 13px;
+    font-size: 8pt;
+}
+
 #tracklistContainer {
     margin-top: 10px;
     overflow: auto;
