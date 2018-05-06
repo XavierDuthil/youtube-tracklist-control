@@ -60,11 +60,7 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
       if (currentTimeCache !== null && currentTimeCache === seconds)
         return;
       currentTimeCache = seconds;
-
-      var date = new Date(null);
-      date.setSeconds(seconds);
-      var dateISO = date.toISOString();
-      var timeStr = seconds >= 3600 ? dateISO.substr(11, 8) : dateISO.substr(14, 5);
+      var timeStr = secondsToDisplayTime(seconds)
 
       currentTimeLabel.textContent = "[" + timeStr + "]";
       currentTimeLabel.setAttribute("style", "display: inline-block");
@@ -72,6 +68,14 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
       currentTimeLabel.setAttribute("style", "display: none");
     }
   });
+}
+
+// Transforms a number of seconds to a printable "xx:xx:xx" string
+function secondsToDisplayTime(seconds) {
+  var date = new Date(null);
+  date.setSeconds(seconds);
+  var dateISO = date.toISOString();
+  return seconds >= 3600 ? dateISO.substr(11, 8) : dateISO.substr(14, 5);
 }
 
 function refreshPaused(tabId, playOrPauseButtonLabel) {
@@ -97,16 +101,23 @@ function refreshTracklist(tabId, tracklistTable) {
     tracklistCache = tracklist;
 
     if (tracklist) {
-      var tableContent = "<tbody><tr><th>N#</th><th>Title</th></tr>";
+      var tableContent = "<tbody>";
+      // tableContent += "<tr><th>N#</th><th>Title</th><th>Time</th></tr>";
       for (var trackIdx in tracklist) {
         var trackInfo = tracklist[trackIdx];
         var trackNum = parseInt(trackIdx) + 1;
         trackNum = (trackNum < 10) ? ("0" + trackNum) : trackNum;
-        tableContent += "<tr><td>" + trackNum + "</td><td>" + trackInfo["title"] + "</td></tr>";
+        tableContent += "<tr>" +
+          "<td class=\"trackNumColumn\">" + trackNum + "</td>" +
+          "<td class=\"trackNameColumn\">" + trackInfo["title"] + "</td>" +
+          "<td class=\"trackTimeColumn\">" + secondsToDisplayTime(trackInfo["startTime"]) + "</td>" +
+          "</tr>";
       }
 
       tableContent += "</tbody>";
-      tracklistTable.innerHTML = tableContent;
+      if (tracklistTable.innerHTML !== tableContent) {
+        tracklistTable.innerHTML = tableContent;
+      }
       tracklistTable.setAttribute("style", "display: table");
     } else {
       tracklistTable.setAttribute("style", "display: none");

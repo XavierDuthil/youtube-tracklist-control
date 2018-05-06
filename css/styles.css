@@ -2,8 +2,8 @@ body {
     margin: 10px;
     /*padding: 5px;*/
     white-space: nowrap;
-    max-width: 500px;
-    min-width: 300px;
+    max-width: 600px;
+    min-width: 400px;
 }
 
 #currentVideoLabel {
@@ -91,6 +91,7 @@ img {
     font-size: 9pt;
     overflow-y: scroll;
     overflow-x: hidden;
+    max-width: 100%;
 }
 
 #tracklistTable {
@@ -105,4 +106,21 @@ img {
     display: grid;
     grid-auto-columns: 1fr;
     margin-top: 8px;
+}
+
+.trackNumColumn {
+    min-width: 10%;
+    width: 10%;
+    max-width: 10%;
+}
+.trackNameColumn {
+    min-width: 70%;
+    width: 70%;
+    max-width: 80%;
+}
+.trackTimeColumn {
+    min-width: 10%;
+    width: 15%;
+    max-width: 15%;
+    text-align: right;
 }
