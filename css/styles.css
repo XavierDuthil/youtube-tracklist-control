@@ -4,18 +4,18 @@ body {
     min-width: 500px;
 }
 
-#currentTrackLabel {
-    margin: 10px 10px 0 10px;
-    text-shadow: 0 0 2px #AAAAAA;
+h5 {
     overflow: hidden;
     text-overflow: ellipsis;
+    margin: 10px;
+}
+
+#currentTrackLabel {
+    margin-bottom: 0;
+    text-shadow: 0 0 2px #AAAAAA;
 }
 
 #currentVideoLabel {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 10px 10px 10px 10px;
     text-shadow: 0 0 1px #BBBBBB;
 }
 
@@ -29,6 +29,7 @@ body {
 
 .primaryTitle {
     font-size: 1.25rem;
+    text-shadow: 0 0 1px #BBBBBB;
 }
 
 .secondaryTitle {
@@ -36,7 +37,7 @@ body {
 }
 
 .info {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
 }
 
 img {

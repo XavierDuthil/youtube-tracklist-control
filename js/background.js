@@ -36,9 +36,10 @@ function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrac
     if (tracklistCache === null || (currentTrackNumCache !== null && currentTrackNumCache === response))
       return;
     currentTrackNumCache = response;
-    var currentTrackName = tracklistCache[currentTrackNumCache]["title"];
 
     if (response !== null) {
+      var currentTrackName = tracklistCache[currentTrackNumCache]["title"];
+
       // Update current track label
       currentTrackLabel.setAttribute("style", "display: block");
       currentTrackLabel.textContent = currentTrackName;

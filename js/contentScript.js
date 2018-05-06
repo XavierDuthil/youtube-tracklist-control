@@ -172,6 +172,9 @@ function getCurrentTrackNum() {
   }
   if (tracklist.length === 0) {
     tracklist = buildTrackList();
+    if (tracklist.length === 0) {
+      return;
+    }
   }
 
   var currentTime = getCurrentTime();
