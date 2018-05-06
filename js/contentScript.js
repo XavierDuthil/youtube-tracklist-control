@@ -26,7 +26,6 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       break;
     case "getCurrentTrack":
       if (tracklist.length === 0) {
-        getElements();
         tracklist = buildTrackList();
       }
       sendResponse(getCurrentTrackTitle());
@@ -38,10 +37,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       sendResponse(getPaused());
       break;
     case "getTracklist":
-      if (tracklist.length === 0) {
-        getElements();
-        tracklist = buildTrackList();
-      }
+      tracklist = buildTrackList();
       sendResponse(tracklist);
       break;
     case "playOrPause":

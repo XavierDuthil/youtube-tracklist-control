@@ -115,9 +115,7 @@ function refreshTracklist(tabId, tracklistTable) {
       }
 
       tableContent += "</tbody>";
-      if (tracklistTable.innerHTML !== tableContent) {
-        tracklistTable.innerHTML = tableContent;
-      }
+      tracklistTable.innerHTML = tableContent;
       tracklistTable.setAttribute("style", "display: table");
     } else {
       tracklistTable.setAttribute("style", "display: none");
