@@ -83,4 +83,12 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     chrome.tabs.sendMessage(tabId, "fastForward");
     refreshPopup()
   }
+
+  // Add click events to the tracklist
+  tracklistTable.addEventListener("click", function (event) {
+    var trElemement = event.target.parentElement;
+    var trackIdx = Array.from(trElemement.parentElement.children).indexOf(trElemement);
+
+    chrome.tabs.sendMessage(tabId, "goToTrack" + trackIdx);
+  });
 });

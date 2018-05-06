@@ -101,6 +101,7 @@ img {
 #tracklistTable {
     text-shadow: 0 0 1px #CCCCCC;
     width: 100%;
+    cursor: pointer;
 }
 
 #tracklistTable th, #tracklistTable td {

@@ -14,7 +14,7 @@ var timestampRegex = /(\d+:)?(\d?\d):(\d\d)/;
  */
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-  if (!currentUrl || currentUrl !== location.href) {
+  if (!currentUrl || currentUrl !== location.href || !videoElement) {
     tracklist = [];
     getElements();
     currentUrl = location.href;
@@ -23,35 +23,43 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   switch (message) {
     case "getCurrentVideo":
       sendResponse(getCurrentVideo());
-      break;
+      return;
     case "getCurrentTrackNum":
       sendResponse(getCurrentTrackNum());
-      break;
+      return;
     case "getCurrentTime":
       sendResponse(getCurrentTime());
-      break;
+      return;
     case "getPaused":
       sendResponse(getPaused());
-      break;
+      return;
     case "getTracklist":
       tracklist = buildTrackList();
       sendResponse(tracklist);
-      break;
+      return;
     case "playOrPause":
       playOrPause();
-      break;
+      return;
     case "previous":
       previous();
-      break;
+      return;
     case "next":
       next();
-      break;
+      return;
     case "rewind":
       rewind();
-      break;
+      return;
     case "fastForward":
       fastForward();
-      break;
+      return;
+  }
+
+  if (message.startsWith("goToTrack")) {
+    var match = message.match(/goToTrack(\d+)/);
+    if (match === null) {
+      return;
+    }
+    goToTrack(parseInt(match[1]));
   }
 });
 
@@ -105,7 +113,7 @@ function previous() {
     return;
   }
 
-  videoElement.currentTime = tracklist[currentTrackNum - 1]["startTime"];
+  goToTrack(currentTrackNum - 1);
 }
 
 function next() {
@@ -119,7 +127,14 @@ function next() {
     return;
   }
 
-  videoElement.currentTime = tracklist[currentTrackNum + 1]["startTime"];
+  goToTrack(currentTrackNum + 1);
+}
+
+function goToTrack(trackIdx) {
+  if (tracklist.length === 0) {
+    tracklist = buildTrackList();
+  }
+  videoElement.currentTime = tracklist[trackIdx]["startTime"];
 }
 
 function rewind() {
@@ -156,7 +171,6 @@ function getCurrentTrackNum() {
     getElements();
   }
   if (tracklist.length === 0) {
-    getElements();
     tracklist = buildTrackList();
   }
 
