@@ -53,6 +53,7 @@ function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrac
       if (playlistTable.firstChild) {
         var newCurrentTrack = playlistTable.firstChild.childNodes[currentTrackNumCache];
         newCurrentTrack.setAttribute("id", "currentTrackInPlaylist");
+        newCurrentTrack.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
       }
 
       // Update other labels
