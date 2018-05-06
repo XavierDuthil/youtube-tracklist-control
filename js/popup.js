@@ -41,7 +41,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
       }
 
       savedURL = tabs[0] ? tabs[0].url : "";
-      hardRefreshesToDo = 10;
+      hardRefreshesToDo = 5;
     });
 
     // The first refreshes don't always succeed, need to repeat for a while

@@ -5,15 +5,17 @@ body {
 }
 
 #currentTrackLabel {
-    margin: 10px;
+    margin: 10px 10px 0 10px;
     text-shadow: 0 0 2px #AAAAAA;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #currentVideoLabel {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 0 10px 10px 10px;
+    margin: 10px 10px 10px 10px;
     text-shadow: 0 0 1px #BBBBBB;
 }
 
@@ -71,24 +73,6 @@ img {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
 }
 
-#tracklistToggleButton {
-    grid-column: 2;
-    height: 15px;
-    border-radius: 15px;
-    cursor: pointer;
-}
-
-/*#tracklistToggleButton:hover {*/
-    /*box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);*/
-/*}*/
-
-/*#tracklistToggleButton span {*/
-    /*display: block;*/
-    /*text-align: center;*/
-    /*line-height: 13px;*/
-    /*font-size: 8pt;*/
-/*}*/
-
 #tracklistContainer {
     font-size: 10pt;
     overflow-y: scroll;
@@ -126,7 +110,9 @@ img {
 .trackNameColumn {
     min-width: 70%;
     width: 70%;
-    max-width: 80%;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .trackTimeColumn {
     min-width: 10%;
