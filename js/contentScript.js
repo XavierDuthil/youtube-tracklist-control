@@ -197,8 +197,27 @@ function buildTrackList() {
   if (!descriptionElement) {
     getElements();
   }
+  var tracklist = tryBuildingTracklistFrom(descriptionElement);
+
+  if (tracklist.length === 0) {
+    var commentElements = document.querySelectorAll('yt-formatted-string.ytd-comment-renderer#content-text');
+    for (var idx in commentElements) {
+      var commentElement = commentElements[idx];
+      tracklist = tryBuildingTracklistFrom(commentElement);
+      if (tracklist.length > 0)
+        break;
+    }
+  }
+  return tracklist
+}
+
+function tryBuildingTracklistFrom(htmlElement) {
   var tracklist = [];
-  var descriptionStr = descriptionElement.textContent;
+  if (!htmlElement || !htmlElement.textContent) {
+    return tracklist;
+  }
+
+  var descriptionStr = htmlElement.textContent;
   var descriptionLines = descriptionStr.split("\n");
 
   for (var lineNum in descriptionLines) {
@@ -216,7 +235,7 @@ function buildTrackList() {
   }
 
   if (tracklist.length === 0) {
-    return []
+    return tracklist
   }
 
   tracklist = cleanTracklistTitles(tracklist);
@@ -240,7 +259,7 @@ function cleanTracklistTitles(tracklist) {
 
 // Find and remove the prefix and suffix that are common to every track titles
 function trimCommonPreSuffixes(tracklist) {
-  if (!tracklist || tracklist.length < 1) {
+  if (!tracklist || tracklist.length === 0) {
     return tracklist;
   }
   var firstTrackTitle = tracklist[0]["title"];
