@@ -2,8 +2,8 @@ body {
     margin: 10px;
     /*padding: 5px;*/
     white-space: nowrap;
-    max-width: 600px;
-    min-width: 400px;
+    max-width: 500px;
+    min-width: 500px;
 }
 
 #currentVideoLabel {
@@ -100,6 +100,10 @@ img {
 
 #tracklistTable th, #tracklistTable td {
     padding: 2px 5px;
+}
+
+#currentTrackInPlaylist {
+    font-weight: 700;
 }
 
 #lowerBar {

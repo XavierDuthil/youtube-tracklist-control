@@ -1,21 +1,20 @@
 var currentVideoCache = null;
-var currentTrackCache = null;
+var currentTrackNumCache = null;
 var currentTimeCache = null;
 var pausedCache = null;
 var tracklistCache = null;
 
 function purgeCache() {
   currentVideoCache = null;
-  currentTrackCache = null;
+  currentTrackNumCache = null;
   currentTimeCache = null;
   pausedCache = null;
   tracklistCache = null;
 }
 
-function refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
+function refreshCurrentVideo(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
   chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
     if (currentVideoCache !== null && currentVideoCache === response) {
-      refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel)
       return;
     }
     currentVideoCache = response;
@@ -32,20 +31,39 @@ function refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel
   });
 }
 
-function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
-  chrome.tabs.sendMessage(tabId, "getCurrentTrack", function (response) {
-    if (currentTrackCache !== null && currentTrackCache === response)
+function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel, playlistTable, document) {
+  chrome.tabs.sendMessage(tabId, "getCurrentTrackNum", function (response) {
+    if (tracklistCache === null || (currentTrackNumCache !== null && currentTrackNumCache === response))
       return;
-    currentTrackCache = response;
+    currentTrackNumCache = response;
+    var currentTrackName = tracklistCache[currentTrackNumCache]["title"];
 
-    if (response) {
-      currentVideoLabel.className = "secondaryTitle";
+    if (response !== null) {
+      // Update current track label
       currentTrackLabel.setAttribute("style", "display: block");
-      currentTrackLabel.textContent = response;
+      currentTrackLabel.textContent = currentTrackName;
+
+      // Remove previously highlighted track in tracklist
+      var previousCurrentTrack = playlistTable.querySelector("#currentTrackInPlaylist");
+      if (previousCurrentTrack !== null) {
+        previousCurrentTrack.removeAttribute("id");
+      }
+
+      // Highlight current track in tracklist
+      if (playlistTable.firstChild) {
+        var newCurrentTrack = playlistTable.firstChild.childNodes[currentTrackNumCache];
+        newCurrentTrack.setAttribute("id", "currentTrackInPlaylist");
+      }
+
+      // Update other labels
+      currentVideoLabel.className = "secondaryTitle";
       noTrackLabel.setAttribute("style", "display: none");
     } else {
-      currentVideoLabel.className = "primaryTitle";
+      // Hide current track label
       currentTrackLabel.setAttribute("style", "display: none");
+
+      // Update other labels
+      currentVideoLabel.className = "primaryTitle";
       noTrackLabel.setAttribute("style", "display: inline");
       noTrackLabel.textContent = chrome.i18n.getMessage("noTracklist");
     }
@@ -60,7 +78,7 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
       if (currentTimeCache !== null && currentTimeCache === seconds)
         return;
       currentTimeCache = seconds;
-      var timeStr = secondsToDisplayTime(seconds)
+      var timeStr = secondsToDisplayTime(seconds);
 
       currentTimeLabel.textContent = "[" + timeStr + "]";
       currentTimeLabel.setAttribute("style", "display: inline-block");

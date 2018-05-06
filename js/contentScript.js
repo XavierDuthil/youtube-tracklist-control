@@ -24,11 +24,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "getCurrentVideo":
       sendResponse(getCurrentVideo());
       break;
-    case "getCurrentTrack":
-      if (tracklist.length === 0) {
-        tracklist = buildTrackList();
-      }
-      sendResponse(getCurrentTrackTitle());
+    case "getCurrentTrackNum":
+      sendResponse(getCurrentTrackNum());
       break;
     case "getCurrentTime":
       sendResponse(getCurrentTime());

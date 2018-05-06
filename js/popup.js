@@ -6,7 +6,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   var backgroundPage = chrome.extension.getBackgroundPage();
   var savedURL;
   var currentURL;
-  var tracklistRefreshesToDo = 0;
+  var hardRefreshesToDo = 0;
 
   chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
     if (savedURL && tabs.length)
@@ -48,10 +48,11 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     if (hardRefreshesToDo > 0) {
       hardRefreshesToDo--;
       backgroundPage.purgeCache();
+      backgroundPage.refreshCurrentVideo(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel);
       backgroundPage.refreshTracklist(tabId, tracklistTable);
     }
 
-    backgroundPage.refreshLabels(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel);
+    backgroundPage.refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel, tracklistTable, document);
     backgroundPage.refreshCurrentTime(tabId, currentTimeLabel);
     backgroundPage.refreshPaused(tabId, playOrPauseButton);
   }
