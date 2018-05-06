@@ -1,6 +1,6 @@
 body {
     margin: 10px;
-    padding: 5px;
+    /*padding: 5px;*/
     white-space: nowrap;
     max-width: 500px;
     min-width: 300px;
@@ -69,27 +69,28 @@ img {
 #tracklistToggleButton {
     grid-column: 2;
     height: 15px;
-    border: solid grey 1px;
     border-radius: 15px;
     cursor: pointer;
 }
 
-#tracklistToggleButton:hover {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-}
+/*#tracklistToggleButton:hover {*/
+    /*box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);*/
+/*}*/
 
-#tracklistToggleButton span {
-    display: block;
-    text-align: center;
-    line-height: 13px;
-    font-size: 8pt;
-}
+/*#tracklistToggleButton span {*/
+    /*display: block;*/
+    /*text-align: center;*/
+    /*line-height: 13px;*/
+    /*font-size: 8pt;*/
+/*}*/
 
 #tracklistContainer {
     margin-top: 10px;
     overflow: auto;
     max-height: 200px;
     font-size: 9pt;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 #tracklistTable {
@@ -98,4 +99,10 @@ img {
 
 #tracklistTable th, #tracklistTable td {
     padding: 2px 5px;
+}
+
+#lowerBar {
+    display: grid;
+    grid-auto-columns: 1fr;
+    margin-top: 8px;
 }

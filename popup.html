@@ -14,9 +14,14 @@
 <body>
 <h5 id="currentTrackLabel" class="primaryTitle"></h5>
 <h5 id="currentVideoLabel" class="secondaryTitle"></h5>
+<div style="display: grid; grid-auto-columns: 1fr">
+  <div style="grid-column: 1 / 4" id="tracklistContainer">
+    <table id="tracklistTable" class="table-striped"></table>
+  </div>
+</div>
 <p id="noTrackLabel" class="info"></p>
 
-<div style="display: grid; grid-auto-columns: 1fr">
+<div id="lowerBar">
   <div style="grid-column: 1">
     <span id="currentTimeLabel"></span>
   </div>
@@ -29,13 +34,10 @@
     <img class="button" src="img/next_track.png" id="nextButton"/>
   </div>
 
-  <div id="tracklistToggleButton">
-      <span>&#9679;&#9679;&#9679;</span>
-  </div>
+  <!--<div id="tracklistToggleButton" style="background: #EAEAEA">-->
+      <!--<span>&#9679;&#9679;&#9679;</span>-->
+  <!--</div>-->
 
-  <div style="grid-column: 1 / 4" id="tracklistContainer">
-    <table id="tracklistTable" class="table-striped"></table>
-  </div>
 </div>
 </body>
 </html>
