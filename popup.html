@@ -12,27 +12,36 @@
 </head>
 
 <body>
-<h5 id="currentTrackLabel" class="primaryTitle"></h5>
-<h5 id="currentVideoLabel" class="secondaryTitle"></h5>
-<p id="noTrackLabel" class="info"></p>
+  <!-- Titles -->
+  <h5 id="currentTrackLabel" class="primaryTitle"></h5>
+  <h5 id="currentVideoLabel" class="secondaryTitle"></h5>
+  <p id="noTrackLabel" class="info"></p>
 
-<div style="display: grid; grid-auto-columns: 1fr">
-  <div style="grid-column: 1">
-    <span id="currentTimeLabel"></span>
+  <!-- Playlist block -->
+  <div style="display: grid; grid-auto-columns: 1fr">
+    <div style="grid-column: 1 / 4" id="tracklistContainer">
+      <table id="tracklistTable" class="table-striped"></table>
+    </div>
   </div>
 
-  <div style="grid-column: 2 / 4; text-align: right">
-    <img class="button" src="img/previous_track.png" id="previousButton"/>
-    <img class="button" src="img/rewind.png" id="rewindButton"/>
-    <img class="button" src="img/play_pause.png" id="playOrPauseButton"/>
-    <img class="button" src="img/fast_forward.png" id="fastForwardButton"/>
-    <img class="button" src="img/next_track.png" id="nextButton"/>
-  </div>
+  <!-- Current time + buttons -->
+  <div id="lowerBar">
+    <div style="grid-column: 1">
+      <span id="currentTimeLabel"></span>
+    </div>
 
-  <div style="grid-column: 1 / 4" id="tracklistContainer">
-    <table id="tracklistTable" class="table-striped"></table>
+    <div style="grid-column: 2 / 4; text-align: right">
+      <img class="button" src="img/previous_track.png" id="previousButton"/>
+      <img class="button" src="img/rewind.png" id="rewindButton"/>
+      <img class="button" src="img/play_pause.png" id="playOrPauseButton"/>
+      <img class="button" src="img/fast_forward.png" id="fastForwardButton"/>
+      <img class="button" src="img/next_track.png" id="nextButton"/>
+    </div>
+
+    <!--<div id="tracklistToggleButton" style="background: #EAEAEA">-->
+        <!--<span>&#9679;&#9679;&#9679;</span>-->
+    <!--</div>-->
   </div>
-</div>
 </body>
 </html>
 
