@@ -34,7 +34,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     }
 
     // Refresh tracklist only if URL has changed
-    chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
+    chrome.tabs.query({'active': true, 'currentWindow':true}, function (tabs) {
       if (tabs[0] && tabs[0].url === savedURL) {
         return;
       }
