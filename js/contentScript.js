@@ -150,12 +150,6 @@ function fastForward() {
     getElements();
   }
 
-  var currentTrackNum = getCurrentTrackNum();
-  if (tracklist.length === 0 || currentTrackNum === tracklist.length - 1) {
-    nextButtonElement.click();
-    return;
-  }
-
   videoElement.currentTime = videoElement.currentTime + 5;
 }
 
