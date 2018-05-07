@@ -3,6 +3,9 @@ var currentTrackNumCache = null;
 var currentTimeCache = null;
 var pausedCache = null;
 var tracklistCache = null;
+var currentTrackStartTime = null;
+var currentTrackDuration = null;
+var currentTrackTrElement = null;
 
 function purgeCache() {
   currentVideoCache = null;
@@ -10,6 +13,9 @@ function purgeCache() {
   currentTimeCache = null;
   pausedCache = null;
   tracklistCache = null;
+  currentTrackStartTime = null;
+  currentTrackDuration = null;
+  currentTrackTrElement = null;
 }
 
 function refreshCurrentVideo(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
@@ -39,6 +45,8 @@ function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrac
 
     if (response !== null) {
       var currentTrackName = tracklistCache[currentTrackNumCache]["title"];
+      currentTrackStartTime = tracklistCache[currentTrackNumCache]["startTime"];
+      currentTrackDuration = tracklistCache[currentTrackNumCache]["duration"];
 
       // Update current track label
       currentTrackLabel.setAttribute("style", "display: block");
@@ -48,13 +56,15 @@ function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrac
       var previousCurrentTrack = playlistTable.querySelector("#currentTrackInPlaylist");
       if (previousCurrentTrack !== null) {
         previousCurrentTrack.removeAttribute("id");
+        previousCurrentTrack.removeAttribute("style");
       }
 
       // Highlight current track in tracklist
       if (playlistTable.firstChild) {
         var newCurrentTrack = playlistTable.firstChild.childNodes[currentTrackNumCache];
         newCurrentTrack.setAttribute("id", "currentTrackInPlaylist");
-        newCurrentTrack.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+        newCurrentTrack.scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
+        currentTrackTrElement = newCurrentTrack;
       }
 
       // Update other labels
@@ -82,8 +92,17 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
       currentTimeCache = seconds;
       var timeStr = secondsToDisplayTime(seconds);
 
+      // Update the total time in the lower bar
       currentTimeLabel.textContent = "[" + timeStr + "]";
       currentTimeLabel.setAttribute("style", "display: inline-block");
+
+      // Update the progress bar in the tracklist
+      if (currentTrackStartTime !== null && currentTrackDuration !== null && currentTrackTrElement !== null) {
+        console.log("currentTrackStartTime: " + currentTrackStartTime)
+        var trackProcess =  (currentTimeCache - currentTrackStartTime) * 100 / currentTrackDuration;
+        var styleText = "background: linear-gradient(90deg, rgb(254, 2, 2) " + trackProcess + "%, #CCCCCC 0%);";
+        currentTrackTrElement.setAttribute('style', styleText);
+      }
     } else {
       currentTimeLabel.setAttribute("style", "display: none");
     }
