@@ -45,7 +45,7 @@ function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrac
       return;
     currentTrackNumCache = response;
 
-    if (response !== null) {
+    if (response !== null && response !== undefined) {
       var currentTrackName = tracklistCache[currentTrackNumCache]["title"];
       currentTrackStartTime = tracklistCache[currentTrackNumCache]["startTime"];
       currentTrackDuration = tracklistCache[currentTrackNumCache]["duration"];
