@@ -7,7 +7,8 @@ body {
 h5 {
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 10px;
+    margin: 5px;
+    padding: 5px;
 }
 
 #currentTrackLabel {
@@ -19,20 +20,13 @@ h5 {
     text-shadow: 0 0 1px #BBBBBB;
 }
 
-#currentTimeLabel {
-    display: inline-block;
-    text-align: right;
-    font-weight: 500;
-    padding-top: 1px;
-    text-shadow: 0 0 1px #BBBBBB;
-}
-
 .primaryTitle {
     font-size: 1.25rem;
     text-shadow: 0 0 1px #BBBBBB;
 }
 
 .secondaryTitle {
+    margin-top: 0;
     font-size: 1rem;
 }
 
@@ -93,16 +87,6 @@ img {
     padding: 2px 5px;
 }
 
-#currentTrackInPlaylist {
-    font-weight: 700;
-}
-
-#lowerBar {
-    display: grid;
-    grid-auto-columns: 1fr;
-    margin: 5px 5px 5px 5px;
-}
-
 .trackNumColumn {
     min-width: 10%;
     width: 10%;
@@ -120,4 +104,22 @@ img {
     width: 15%;
     max-width: 15%;
     text-align: right;
+}
+
+#currentTrackInPlaylist {
+    font-weight: 700;
+}
+
+#lowerBar {
+    display: grid;
+    grid-auto-columns: 1fr;
+    margin: 5px 5px 5px 5px;
+}
+
+#currentTimeLabel {
+    display: inline-block;
+    text-align: right;
+    font-weight: 500;
+    padding-top: 1px;
+    text-shadow: 0 0 1px #BBBBBB;
 }

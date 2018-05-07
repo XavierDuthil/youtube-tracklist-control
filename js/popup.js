@@ -62,6 +62,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   document.getElementById("nextButton").addEventListener("click", nextPressed);
   document.getElementById("rewindButton").addEventListener("click", rewindPressed);
   document.getElementById("fastForwardButton").addEventListener("click", fastForwardPressed);
+  document.getElementById("refreshButton").addEventListener("click", refreshPressed);
 
   function playOrPausePressed() {
     chrome.tabs.sendMessage(tabId, "playOrPause");
@@ -81,6 +82,10 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   }
   function fastForwardPressed() {
     chrome.tabs.sendMessage(tabId, "fastForward");
+    refreshPopup()
+  }
+  function refreshPressed() {
+    hardRefreshesToDo++;
     refreshPopup()
   }
 
