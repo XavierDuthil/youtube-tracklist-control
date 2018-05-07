@@ -82,7 +82,13 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
       currentTimeCache = seconds;
       var timeStr = secondsToDisplayTime(seconds);
 
-      currentTimeLabel.textContent = "[" + timeStr + "]";
+      if (tracklistCache && tracklistCache.length > 0) {
+        var lastTrack = tracklistCache[tracklistCache.length - 1];
+        var totalTimeStr = secondsToDisplayTime(lastTrack["startTime"] + lastTrack["duration"]);
+        currentTimeLabel.textContent = timeStr + " / " + totalTimeStr;
+      } else {
+        currentTimeLabel.textContent = timeStr;
+      }
       currentTimeLabel.setAttribute("style", "display: inline-block");
     } else {
       currentTimeLabel.setAttribute("style", "display: none");
