@@ -1,6 +1,8 @@
 chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
+  // Lower refresh period offers better reactivity when opening the Popup
   var config = {
-    'refresh_time': 200
+    'initial_refresh_period': 50,
+    'normal_refresh_period': 500
   };
   var tabId = tab[0].id;
   var backgroundPage = chrome.extension.getBackgroundPage();
@@ -17,9 +19,19 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   startTicker();
 
   function startTicker() {
+    window.setTimeout(function () {
+      refreshPopup();
+    }, config["initial_refresh_period"]);
+    window.setTimeout(function () {
+      refreshPopup();
+    }, config["initial_refresh_period"] * 2);
+    window.setTimeout(function () {
+      refreshPopup();
+    }, config["initial_refresh_period"] * 4);
+
     window.setInterval(function () {
       refreshPopup();
-    }, config["refresh_time"]);
+    }, config["normal_refresh_period"]);
   }
 
   var currentVideoLabel = document.getElementById("currentVideoLabel");
