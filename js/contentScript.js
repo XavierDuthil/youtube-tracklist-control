@@ -6,9 +6,11 @@ var timestampRegex = /(\d+:)?(\d?\d):(\d\d)/;
     {
       "startTime": 0,
       "title": "First track title",
+      "duration": 263
     }, {
       "startTime": 162,
       "title": "Second track title",
+      "duration": 189
     }
   ]
  */
@@ -208,6 +210,7 @@ function buildTrackList() {
         break;
     }
   }
+
   return tracklist
 }
 
@@ -239,13 +242,30 @@ function tryBuildingTracklistFrom(htmlElement) {
   }
 
   tracklist = cleanTracklistTitles(tracklist);
-  return sort(tracklist);
+  tracklist = sort(tracklist);
+  tracklist = addDurationsToTracklist(tracklist);
+  return tracklist;
 }
 
 function sort(tracklist) {
   return tracklist.sort(function (a, b) {
     return a["startTime"] - b["startTime"];
   });
+}
+
+function addDurationsToTracklist(tracklist) {
+  if (tracklist.length === 0)
+    return tracklist;
+
+  if (!videoElement) {
+    getElements();
+  }
+
+  for (var trackIdx = 0; trackIdx < tracklist.length - 1; trackIdx++) {
+    tracklist[trackIdx]["duration"] = tracklist[trackIdx+1]["startTime"] - tracklist[trackIdx]["startTime"];
+  }
+  tracklist[tracklist.length - 1]["duration"] = videoElement.duration - tracklist[tracklist.length - 1]["startTime"];
+  return tracklist;
 }
 
 function extractTrackTitle(descriptionLine, timestamp) {

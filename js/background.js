@@ -130,7 +130,7 @@ function refreshTracklist(tabId, tracklistTable) {
         tableContent += "<tr>" +
           "<td class=\"trackNumColumn\">" + trackNum + "</td>" +
           "<td class=\"trackNameColumn\">" + trackInfo["title"] + "</td>" +
-          "<td class=\"trackTimeColumn\">" + secondsToDisplayTime(trackInfo["startTime"]) + "</td>" +
+          "<td class=\"trackTimeColumn\">" + secondsToDisplayTime(trackInfo["duration"]) + "</td>" +
           "</tr>";
       }
 
