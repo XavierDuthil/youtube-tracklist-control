@@ -83,6 +83,10 @@ img {
     cursor: pointer;
 }
 
+#tracklistTable tr {
+    min-height: 5px;
+}
+
 #tracklistTable th, #tracklistTable td {
     padding: 2px 5px;
 }

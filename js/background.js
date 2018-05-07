@@ -5,7 +5,8 @@ var pausedCache = null;
 var tracklistCache = null;
 var currentTrackStartTime = null;
 var currentTrackDuration = null;
-var currentTrackTrElement = null;
+var trackProgressBarElement = null;
+var trackProgressBarElement2 = null;
 
 function purgeCache() {
   currentVideoCache = null;
@@ -15,7 +16,8 @@ function purgeCache() {
   tracklistCache = null;
   currentTrackStartTime = null;
   currentTrackDuration = null;
-  currentTrackTrElement = null;
+  trackProgressBarElement = null;
+  trackProgressBarElement2 = null;
 }
 
 function refreshCurrentVideo(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
@@ -57,6 +59,8 @@ function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrac
       if (previousCurrentTrack !== null) {
         previousCurrentTrack.removeAttribute("id");
         previousCurrentTrack.removeAttribute("style");
+        trackProgressBarElement.remove();
+        trackProgressBarElement2.remove();
       }
 
       // Highlight current track in tracklist
@@ -64,7 +68,12 @@ function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrac
         var newCurrentTrack = playlistTable.firstChild.childNodes[currentTrackNumCache];
         newCurrentTrack.setAttribute("id", "currentTrackInPlaylist");
         newCurrentTrack.scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
-        currentTrackTrElement = newCurrentTrack;
+        trackProgressBarElement = playlistTable.insertRow(currentTrackNumCache + 1);
+        trackProgressBarElement2 = playlistTable.insertRow(currentTrackNumCache + 2);
+        // trackProgressBarElement.setAttribute("height", "5px");
+        var progressBarCell = trackProgressBarElement.insertCell()
+        progressBarCell.rowSpan = 2;
+        progressBarCell.colSpan = 3;
       }
 
       // Update other labels
@@ -97,11 +106,10 @@ function refreshCurrentTime(tabId, currentTimeLabel) {
       currentTimeLabel.setAttribute("style", "display: inline-block");
 
       // Update the progress bar in the tracklist
-      if (currentTrackStartTime !== null && currentTrackDuration !== null && currentTrackTrElement !== null) {
-        console.log("currentTrackStartTime: " + currentTrackStartTime)
+      if (currentTrackStartTime !== null && currentTrackDuration !== null && trackProgressBarElement !== null) {
         var trackProcess =  (currentTimeCache - currentTrackStartTime) * 100 / currentTrackDuration;
         var styleText = "background: linear-gradient(90deg, rgb(254, 2, 2) " + trackProcess + "%, #CCCCCC 0%);";
-        currentTrackTrElement.setAttribute('style', styleText);
+        trackProgressBarElement.setAttribute('style', styleText);
       }
     } else {
       currentTimeLabel.setAttribute("style", "display: none");
