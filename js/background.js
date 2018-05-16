@@ -181,7 +181,7 @@ chrome.windows.getAll({
     for( ; j < t; j++ ) {
       currentTab = currentWindow.tabs[j];
       // Proceed only with youtube pages
-      if(currentTab.url.match(/youtube.com/gi) ) {
+      if(currentTab.url.match(/youtube.com\/watch/gi) ) {
         injectIntoTab(currentTab);
       }
     }
