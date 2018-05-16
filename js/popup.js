@@ -97,6 +97,12 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     refreshPopup()
   }
   function refreshPressed() {
+    // Inject script if no response is received
+    chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
+      if (response === undefined) {
+        backgroundPage.injectIntoTab(tab)
+      }
+    });
     hardRefreshesToDo++;
     refreshPopup()
   }
