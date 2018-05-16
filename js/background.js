@@ -197,6 +197,7 @@ chrome.windows.getAll({
   populate: true
 }, function (windows) {
   var i = 0, w = windows.length, currentWindow;
+  var tabToActivateKeyboardShortcuts = null;
   for( ; i < w; i++ ) {
     currentWindow = windows[i];
     var j = 0, t = currentWindow.tabs.length, currentTab;
@@ -205,9 +206,13 @@ chrome.windows.getAll({
       // Proceed only with youtube pages
       if(currentTab.url.match(/youtube.com/gi) ) {
         injectIntoTab(currentTab);
+        tabToActivateKeyboardShortcuts = currentTab;
       }
     }
   }
+
+  // Activate keyboard shortcuts for the last Youtube video tab detected
+  activateKeyboardShortcuts(tabToActivateKeyboardShortcuts.id);
 });
 
 // Inject contentScript
