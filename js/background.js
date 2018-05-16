@@ -212,7 +212,9 @@ chrome.windows.getAll({
   }
 
   // Activate keyboard shortcuts for the last Youtube video tab detected
-  activateKeyboardShortcuts(tabToActivateKeyboardShortcuts.id);
+  if (tabToActivateKeyboardShortcuts) {
+    activateKeyboardShortcuts(tabToActivateKeyboardShortcuts.id);
+  }
 });
 
 // Inject contentScript
@@ -224,4 +226,4 @@ var injectIntoTab = function (tab) {
       file: scripts[i]
     });
   }
-}
+};
