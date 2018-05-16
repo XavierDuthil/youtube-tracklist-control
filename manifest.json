@@ -38,5 +38,29 @@
       "matches": ["*://*.youtube.com/watch?v=*"],
       "js": ["js/contentScript.js"]
     }
-  ]
+  ],
+
+  "commands": {
+    "cmd_previous_track": {
+      "suggested_key": {
+        "default": "MediaPrevTrack"
+      },
+      "description": "Go to previous track",
+      "global": true
+    },
+    "cmd_play_pause": {
+      "suggested_key": {
+        "default": "MediaPlayPause"
+      },
+      "description": "Play/pause",
+      "global": true
+    },
+    "cmd_next_track": {
+      "suggested_key": {
+        "default": "MediaNextTrack"
+      },
+      "description": "Go to next track",
+      "global": true
+    }
+  }
 }
