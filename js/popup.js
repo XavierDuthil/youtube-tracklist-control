@@ -4,16 +4,9 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     'initial_refresh_period': 50,
     'normal_refresh_period': 500
   };
-  var tabId = tab[0].id;
+  var currentTab = tab[0];
   var backgroundPage = chrome.extension.getBackgroundPage();
-  var savedURL;
-  var currentURL;
-  var hardRefreshesToDo = 0;
-
-  chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
-    if (savedURL && tabs.length)
-      savedURL = tabs[0].url;
-  });
+  var hardRefreshesToDo = 1;
 
   refreshPopup();
   startTicker();
@@ -40,80 +33,95 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   var currentTimeLabel = document.getElementById("currentTimeLabel");
   var playOrPauseButton = document.getElementById("playOrPauseButton");
   var tracklistTable = document.getElementById("tracklistTable");
+  var refreshButton = document.getElementById("refreshButton");
 
   function refreshPopup() {
     if (!currentVideoLabel) {
       return;
     }
 
-    // Refresh tracklist only if URL has changed
-    chrome.tabs.query({'active': true, 'currentWindow':true}, function (tabs) {
-      if (tabs[0] && tabs[0].url === savedURL) {
-        return;
+    if (backgroundPage.trackedTabId && backgroundPage.trackedTabId !== undefined) {
+      // Update refresh button visual state
+      if (backgroundPage.trackedTabId === currentTab.id) {
+        refreshButton.className = "buttonActive"
+      } else {
+        refreshButton.className = ""
       }
 
-      savedURL = tabs[0] ? tabs[0].url : "";
-      hardRefreshesToDo = 5;
-    });
+      chrome.tabs.get(backgroundPage.trackedTabId, function (trackedTab) {
+        // Don't hard refresh the tracklist if the tracked tab is still on the same URL
+        if (trackedTab.url === backgroundPage.trackedTabUrl) {
+          return;
+        }
+
+        // If the tracked tab has been closed, set the current one as tracked
+        if (trackedTab === undefined) {
+          backgroundPage.setTrackedTab(currentTab)
+        }
+
+        hardRefreshesToDo = 5;
+      });
+    }
+
+    if (!backgroundPage.trackedTabId) {
+      backgroundPage.setTrackedTab(currentTab)
+    }
 
     // The first refreshes don't always succeed, need to repeat for a while
     if (hardRefreshesToDo > 0) {
       hardRefreshesToDo--;
       backgroundPage.purgeCache();
-      backgroundPage.refreshCurrentVideo(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel);
-      backgroundPage.refreshTracklist(tabId, tracklistTable);
+      backgroundPage.refreshCurrentVideo(currentVideoLabel, currentTrackLabel, noTrackLabel);
+      backgroundPage.refreshTracklist(tracklistTable);
     }
 
-    backgroundPage.refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel, tracklistTable, document);
-    backgroundPage.refreshCurrentTime(tabId, currentTimeLabel);
-    backgroundPage.refreshPaused(tabId, playOrPauseButton);
+    backgroundPage.refreshCurrentTrack(currentVideoLabel, currentTrackLabel, noTrackLabel, tracklistTable, document);
+    backgroundPage.refreshCurrentTime(currentTimeLabel);
+    backgroundPage.refreshPaused(playOrPauseButton);
   }
 
-  document.getElementById("playOrPauseButton").addEventListener("click", playOrPausePressed);
-  document.getElementById("previousButton").addEventListener("click", previousPressed);
-  document.getElementById("nextButton").addEventListener("click", nextPressed);
-  document.getElementById("rewindButton").addEventListener("click", rewindPressed);
-  document.getElementById("fastForwardButton").addEventListener("click", fastForwardPressed);
-  document.getElementById("refreshButton").addEventListener("click", refreshPressed);
+  // Add click events to the media buttons
+  document.getElementById("playOrPauseButton").addEventListener("click", function () {
+    backgroundPage.playOrPause();
+    refreshPopup()
+  });
+  document.getElementById("previousButton").addEventListener("click", function () {
+    backgroundPage.previousTrack();
+    refreshPopup()
+  });
+  document.getElementById("nextButton").addEventListener("click", function () {
+    backgroundPage.nextTrack();
+    refreshPopup()
+  });
+  document.getElementById("rewindButton").addEventListener("click", function () {
+    backgroundPage.rewind();
+    refreshPopup()
+  });
+  document.getElementById("fastForwardButton").addEventListener("click", function () {
+    backgroundPage.fastForward();
+    refreshPopup();
+  });
 
-  function playOrPausePressed() {
-    chrome.tabs.sendMessage(tabId, "playOrPause");
-    refreshPopup()
-  }
-  function previousPressed() {
-    chrome.tabs.sendMessage(tabId, "previous");
-    refreshPopup()
-  }
-  function nextPressed() {
-    chrome.tabs.sendMessage(tabId, "next");
-    refreshPopup()
-  }
-  function rewindPressed() {
-    chrome.tabs.sendMessage(tabId, "rewind");
-    refreshPopup()
-  }
-  function fastForwardPressed() {
-    chrome.tabs.sendMessage(tabId, "fastForward");
-    refreshPopup()
-  }
-  function refreshPressed() {
+  // Add click event to the refresh button
+  refreshButton.addEventListener("click",  function () {
     // Inject script if no response is received
-    chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
+    chrome.tabs.sendMessage(currentTab.id, "getCurrentVideo", function (response) {
       if (response === undefined) {
         backgroundPage.injectIntoTab(tab)
       }
     });
+    backgroundPage.setTrackedTab(currentTab);
+    refreshButton.className = "buttonActive";
     hardRefreshesToDo++;
-    refreshPopup()
-  }
+    refreshPopup();
+  });
 
   // Add click events to the tracklist
   tracklistTable.addEventListener("click", function (event) {
     var trElemement = event.target.parentElement;
     var trackIdx = Array.from(trElemement.parentElement.children).indexOf(trElemement);
 
-    chrome.tabs.sendMessage(tabId, "goToTrack" + trackIdx);
+    backgroundPage.goToTrack(trackIdx);
+    refreshPopup();
   });
-
-  backgroundPage.activateKeyboardShortcuts(tabId)
 });
