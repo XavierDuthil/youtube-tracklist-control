@@ -1,4 +1,4 @@
-# YouTube™ Compilation Helper
+# YouTube™ Tracklist Control
 MIT-licensed open source extension for Google Chrome and Chromium by Xavier Duthil.  
 
 This extension provides useful functionalities when watching music-compilation videos on YouTube™.  
