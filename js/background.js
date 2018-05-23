@@ -8,6 +8,15 @@ var currentTrackDuration = null;
 var trackProgressBarElement = null;
 var trackProgressBarElement2 = null;
 var currentKeyboardShortcutsListener = null;
+var trackedTabId = null;
+var trackedTabUrl = null;
+
+function setTrackedTab(newTrackTab) {
+  trackedTabId = newTrackTab.id;
+  trackedTabUrl = newTrackTab.url;
+  purgeCache();
+  activateKeyboardShortcuts()
+}
 
 function purgeCache() {
   currentVideoCache = null;
@@ -21,8 +30,48 @@ function purgeCache() {
   trackProgressBarElement2 = null;
 }
 
-function refreshCurrentVideo(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel) {
-  chrome.tabs.sendMessage(tabId, "getCurrentVideo", function (response) {
+// Reset the keyboard shortcuts and activate them for the given tab
+function activateKeyboardShortcuts() {
+  if (currentKeyboardShortcutsListener) {
+    chrome.commands.onCommand.removeListener(currentKeyboardShortcutsListener);
+  }
+  currentKeyboardShortcutsListener = function(command) {
+    switch (command) {
+      case "cmd_play_pause":
+        chrome.tabs.sendMessage(trackedTabId, "playOrPause");
+        break;
+      case "cmd_previous_track":
+        chrome.tabs.sendMessage(trackedTabId, "previousTrack");
+        break;
+      case "cmd_next_track":
+        chrome.tabs.sendMessage(trackedTabId, "nextTrack");
+        break;
+    }
+  };
+  chrome.commands.onCommand.addListener(currentKeyboardShortcutsListener);
+}
+
+function playOrPause() {
+  chrome.tabs.sendMessage(trackedTabId, "playOrPause");
+}
+function previousTrack() {
+  chrome.tabs.sendMessage(trackedTabId, "previousTrack");
+}
+function nextTrack() {
+  chrome.tabs.sendMessage(trackedTabId, "nextTrack");
+}
+function rewind() {
+  chrome.tabs.sendMessage(trackedTabId, "rewind");
+}
+function fastForward() {
+  chrome.tabs.sendMessage(trackedTabId, "fastForward");
+}
+function goToTrack(trackIdx) {
+  chrome.tabs.sendMessage(trackedTabId, "goToTrack" + trackIdx);
+}
+
+function refreshCurrentVideo(currentVideoLabel, currentTrackLabel, noTrackLabel) {
+  chrome.tabs.sendMessage(trackedTabId, "getCurrentVideo", function (response) {
     if (currentVideoCache !== null && currentVideoCache === response) {
       return;
     }
@@ -31,7 +80,7 @@ function refreshCurrentVideo(tabId, currentVideoLabel, currentTrackLabel, noTrac
     if (response) {
       currentVideoLabel.textContent = response;
       currentTrackLabel.display = "block";
-      refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel)
+      refreshCurrentTrack(trackedTabId, currentVideoLabel, currentTrackLabel, noTrackLabel)
     } else {
       currentVideoLabel.textContent = chrome.i18n.getMessage("noVideo");
       currentTrackLabel.setAttribute("style", "display: none");
@@ -40,8 +89,8 @@ function refreshCurrentVideo(tabId, currentVideoLabel, currentTrackLabel, noTrac
   });
 }
 
-function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrackLabel, playlistTable, document) {
-  chrome.tabs.sendMessage(tabId, "getCurrentTrackNum", function (response) {
+function refreshCurrentTrack(currentVideoLabel, currentTrackLabel, noTrackLabel, playlistTable, document) {
+  chrome.tabs.sendMessage(trackedTabId, "getCurrentTrackNum", function (response) {
     if (tracklistCache === null || (currentTrackNumCache !== null && currentTrackNumCache === response))
       return;
     currentTrackNumCache = response;
@@ -92,8 +141,8 @@ function refreshCurrentTrack(tabId, currentVideoLabel, currentTrackLabel, noTrac
   });
 }
 
-function refreshCurrentTime(tabId, currentTimeLabel) {
-  chrome.tabs.sendMessage(tabId, "getCurrentTime", function (response) {
+function refreshCurrentTime(currentTimeLabel) {
+  chrome.tabs.sendMessage(trackedTabId, "getCurrentTime", function (response) {
     if (response) {
       var seconds = parseInt(response);
 
@@ -126,8 +175,8 @@ function secondsToDisplayTime(seconds) {
   return seconds >= 3600 ? dateISO.substr(11, 8) : dateISO.substr(14, 5);
 }
 
-function refreshPaused(tabId, playOrPauseButtonLabel) {
-  chrome.tabs.sendMessage(tabId, "getPaused", function (paused) {
+function refreshPaused(playOrPauseButtonLabel) {
+  chrome.tabs.sendMessage(trackedTabId, "getPaused", function (paused) {
     if (pausedCache !== null && pausedCache === paused)
       return;
     pausedCache = paused;
@@ -142,8 +191,8 @@ function refreshPaused(tabId, playOrPauseButtonLabel) {
   });
 }
 
-function refreshTracklist(tabId, tracklistTable) {
-  chrome.tabs.sendMessage(tabId, "getTracklist", function (tracklist) {
+function refreshTracklist(tracklistTable) {
+  chrome.tabs.sendMessage(trackedTabId, "getTracklist", function (tracklist) {
     if (tracklistCache !== null && JSON.stringify(tracklistCache) === JSON.stringify(tracklist))
       return;
     tracklistCache = tracklist;
@@ -171,33 +220,12 @@ function refreshTracklist(tabId, tracklistTable) {
   });
 }
 
-// Reset the keyboard shortcuts and activate them for the given tab
-function activateKeyboardShortcuts(tabId) {
-  if (currentKeyboardShortcutsListener) {
-    chrome.commands.onCommand.removeListener(currentKeyboardShortcutsListener);
-  }
-  currentKeyboardShortcutsListener = function(command) {
-    switch (command) {
-      case "cmd_play_pause":
-        chrome.tabs.sendMessage(tabId, "playOrPause");
-        break;
-      case "cmd_previous_track":
-        chrome.tabs.sendMessage(tabId, "previous");
-        break;
-      case "cmd_next_track":
-        chrome.tabs.sendMessage(tabId, "next");
-        break;
-    }
-  };
-  chrome.commands.onCommand.addListener(currentKeyboardShortcutsListener);
-}
-
 // Inject contentScript on upgrade/install into all youtube tabs
 chrome.windows.getAll({
   populate: true
 }, function (windows) {
   var i = 0, w = windows.length, currentWindow;
-  var tabToActivateKeyboardShortcuts = null;
+  var tabToTrack = null;
   for( ; i < w; i++ ) {
     currentWindow = windows[i];
     var j = 0, t = currentWindow.tabs.length, currentTab;
@@ -206,14 +234,14 @@ chrome.windows.getAll({
       // Proceed only with youtube pages
       if(currentTab.url.match(/youtube.com\/watch/gi) ) {
         injectIntoTab(currentTab);
-        tabToActivateKeyboardShortcuts = currentTab;
+        tabToTrack = currentTab;
       }
     }
   }
 
   // Activate keyboard shortcuts for the last Youtube video tab detected
-  if (tabToActivateKeyboardShortcuts) {
-    activateKeyboardShortcuts(tabToActivateKeyboardShortcuts.id);
+  if (tabToTrack) {
+    setTrackedTab(tabToTrack);
   }
 });
 

@@ -42,10 +42,10 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "playOrPause":
       playOrPause();
       return;
-    case "previous":
+    case "previousTrack":
       previous();
       return;
-    case "next":
+    case "nextTrack":
       next();
       return;
     case "rewind":
