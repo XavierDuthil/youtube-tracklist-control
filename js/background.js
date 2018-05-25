@@ -10,6 +10,7 @@ var trackProgressBarElement2 = null;
 var currentKeyboardShortcutsListener = null;
 var trackedTabId = null;
 var trackedTabUrl = null;
+var injectableUrlRegex = /youtube.com\/watch/gi;
 
 function setTrackedTab(newTrackTab) {
   trackedTabId = newTrackTab.id;
@@ -233,7 +234,7 @@ chrome.windows.getAll({
     for( ; j < t; j++ ) {
       currentTab = currentWindow.tabs[j];
       // Proceed only with youtube pages
-      if(currentTab.url.match(/youtube.com\/watch/gi) ) {
+      if(currentTab.url.match(injectableUrlRegex) ) {
         injectIntoTab(currentTab);
         tabToTrack = currentTab;
       }
@@ -248,11 +249,21 @@ chrome.windows.getAll({
 
 // Inject contentScript
 var injectIntoTab = function (tab) {
-  var scripts = chrome.runtime.getManifest().content_scripts[0].js;
-  var i = 0, s = scripts.length;
-  for( ; i < s; i++ ) {
-    chrome.tabs.executeScript(tab.id, {
-      file: scripts[i]
-    });
+  if (!tab.id || !tab.url) {
+    return;
+  }
+
+  try {
+    var scripts = chrome.runtime.getManifest().content_scripts[0].js;
+    var i = 0, s = scripts.length;
+    for( ; i < s; i++ ) {
+      if (tab.url.match(injectableUrlRegex)) {
+        chrome.tabs.executeScript(tab.id, {
+          file: scripts[i]
+        });
+      }
+    }
+  } catch (e) {
+    console.log("Unable to inject content script in tab URL " + tab.url + ": " + e)
   }
 };
