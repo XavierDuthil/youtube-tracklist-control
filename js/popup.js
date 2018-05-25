@@ -57,9 +57,11 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
         // If the tracked tab has been closed, set the current one as tracked
         if (trackedTab === undefined) {
           backgroundPage.setTrackedTab(currentTab)
+        } else {
+          backgroundPage.setTrackedTab(trackedTab)
         }
 
-        hardRefreshesToDo = 5;
+        hardRefreshesToDo = 3;
       });
     }
 
