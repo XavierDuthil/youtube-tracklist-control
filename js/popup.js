@@ -118,8 +118,26 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
 
   // Add click events to the tracklist
   tracklistTable.addEventListener("click", function (event) {
-    var trElemement = event.target.parentElement;
-    var trackIdx = Array.from(trElemement.parentElement.children).indexOf(trElemement);
+    var clickedTrElement = event.target.parentElement;
+
+    // Do nothing when progressBar is clicked
+    if (clickedTrElement.className === "progressBar") {
+      return;
+    }
+
+    // Find the clicked track index
+    var trackIdx = 0;
+    var trElements = Array.from(clickedTrElement.parentElement.children)
+    for (var trElementIdx in trElements) {
+      var trElement = trElements[trElementIdx];
+      if (trElement === clickedTrElement) {
+        break;
+      }
+
+      if (trElement.className !== "progressBar") {
+        trackIdx++;
+      }
+    }
 
     backgroundPage.goToTrack(trackIdx);
     refreshPopup();

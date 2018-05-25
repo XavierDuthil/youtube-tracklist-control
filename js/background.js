@@ -113,14 +113,15 @@ function refreshCurrentTrack(currentVideoLabel, currentTrackLabel, noTrackLabel,
         trackProgressBarElement2.remove();
       }
 
-      // Highlight current track in tracklist
+      // Highlight current track in tracklist and add progress bar
       if (playlistTable.firstChild) {
         var newCurrentTrack = playlistTable.firstChild.childNodes[currentTrackNumCache];
         newCurrentTrack.setAttribute("id", "currentTrackInPlaylist");
         newCurrentTrack.scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
         trackProgressBarElement = playlistTable.insertRow(currentTrackNumCache + 1);
         trackProgressBarElement2 = playlistTable.insertRow(currentTrackNumCache + 2);
-        // trackProgressBarElement.setAttribute("height", "5px");
+        trackProgressBarElement.className = "progressBar";
+        trackProgressBarElement2.className = "progressBar";
         var progressBarCell = trackProgressBarElement.insertCell()
         progressBarCell.rowSpan = 2;
         progressBarCell.colSpan = 3;
