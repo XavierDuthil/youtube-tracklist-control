@@ -1,5 +1,5 @@
 # YouTube™ Tracklist Control
-MIT-licensed open source extension for Google Chrome and Chromium by Xavier Duthil.  
+MIT-licensed open source extension for Google Chrome and Chromium.  
 
 This extension provides useful functionalities when watching music-compilation videos on YouTube™.  
 
