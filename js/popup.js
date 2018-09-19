@@ -27,8 +27,8 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     }, config["normal_refresh_period"]);
   }
 
-  var currentVideoLabel = document.getElementById("currentVideoLabel");
-  var currentTrackLabel = document.getElementById("currentTrackLabel");
+  var secondaryPopupLabel = document.getElementById("secondaryPopupLabel");
+  var mainPopupLabel = document.getElementById("mainPopupLabel");
   var noTrackLabel = document.getElementById("noTrackLabel");
   var currentTimeLabel = document.getElementById("currentTimeLabel");
   var playOrPauseButton = document.getElementById("playOrPauseButton");
@@ -36,7 +36,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   var refreshButton = document.getElementById("refreshButton");
 
   function refreshPopup() {
-    if (!currentVideoLabel) {
+    if (!secondaryPopupLabel) {
       return;
     }
 
@@ -73,11 +73,12 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     if (hardRefreshesToDo > 0) {
       hardRefreshesToDo--;
       backgroundPage.purgeCache();
-      backgroundPage.refreshCurrentVideo(currentVideoLabel, currentTrackLabel, noTrackLabel);
+      backgroundPage.refreshCurrentVideo(secondaryPopupLabel, mainPopupLabel, noTrackLabel); // FIXME: Include into refreshCurrentTrack?
       backgroundPage.refreshTracklist(tracklistTable);
     }
 
-    backgroundPage.refreshCurrentTrack(currentVideoLabel, currentTrackLabel, noTrackLabel, tracklistTable, document);
+    // FIXME: do we need to call refreshCurrentTrack AND refreshCurrentVideo?
+    backgroundPage.refreshCurrentTrack(secondaryPopupLabel, mainPopupLabel, noTrackLabel, tracklistTable);
     backgroundPage.refreshCurrentTime(currentTimeLabel);
     backgroundPage.refreshPaused(playOrPauseButton);
   }

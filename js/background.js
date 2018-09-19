@@ -71,7 +71,7 @@ function goToTrack(trackIdx) {
   chrome.tabs.sendMessage(trackedTabId, "goToTrack" + trackIdx);
 }
 
-function refreshCurrentVideo(currentVideoLabel, currentTrackLabel, noTrackLabel) {
+function refreshCurrentVideo(secondaryPopupLabel, mainPopupLabel, noTrackLabel, playlistTable) {
   chrome.tabs.sendMessage(trackedTabId, "getCurrentVideo", function (response) {
     if (currentVideoCache !== null && currentVideoCache === response) {
       return;
@@ -79,18 +79,39 @@ function refreshCurrentVideo(currentVideoLabel, currentTrackLabel, noTrackLabel)
     currentVideoCache = response;
 
     if (response) {
-      currentVideoLabel.textContent = response;
-      currentTrackLabel.display = "block";
-      refreshCurrentTrack(trackedTabId, currentVideoLabel, currentTrackLabel, noTrackLabel)
+      refreshCurrentTrack(secondaryPopupLabel, mainPopupLabel, noTrackLabel, playlistTable)
     } else {
-      currentVideoLabel.textContent = chrome.i18n.getMessage("noVideo");
-      currentTrackLabel.setAttribute("style", "display: none");
-      noTrackLabel.setAttribute("style", "display: none");
+      setNoVideoLayout(secondaryPopupLabel, mainPopupLabel, noTrackLabel);
     }
   });
 }
 
-function refreshCurrentTrack(currentVideoLabel, currentTrackLabel, noTrackLabel, playlistTable, document) {
+function setNoVideoLayout(secondaryPopupLabel, mainPopupLabel, noTrackLabel) {
+  // FIXME
+  secondaryPopupLabel.textContent = chrome.i18n.getMessage("noVideo");
+  mainPopupLabel.setAttribute("style", "display: none");
+  noTrackLabel.setAttribute("style", "display: none");
+}
+
+function setNoTrackLayout(secondaryPopupLabel, mainPopupLabel, noTrackLabel) {
+  // FIXME
+  secondaryPopupLabel.textContent = response;
+  mainPopupLabel.display = "block";
+
+  // Hide current track label
+  mainPopupLabel.setAttribute("style", "display: none");
+
+  // Update other labels
+  secondaryPopupLabel.className = "primaryTitle";
+  noTrackLabel.setAttribute("style", "display: inline");
+  noTrackLabel.textContent = chrome.i18n.getMessage("noTracklist");
+}
+
+function setTracklistLayout(secondaryPopupLabel, mainPopupLabel, noTrackLabel) {
+  // FIXME
+}
+
+function refreshCurrentTrack(secondaryPopupLabel, mainPopupLabel, noTrackLabel, playlistTable) {
   chrome.tabs.sendMessage(trackedTabId, "getCurrentTrackNum", function (response) {
     if (tracklistCache === null || (currentTrackNumCache !== null && currentTrackNumCache === response))
       return;
@@ -102,8 +123,8 @@ function refreshCurrentTrack(currentVideoLabel, currentTrackLabel, noTrackLabel,
       currentTrackDuration = tracklistCache[currentTrackNumCache]["duration"];
 
       // Update current track label
-      currentTrackLabel.setAttribute("style", "display: block");
-      currentTrackLabel.textContent = currentTrackName;
+      mainPopupLabel.setAttribute("style", "display: block");
+      mainPopupLabel.textContent = currentTrackName;
 
       // Remove previously highlighted track in tracklist
       var previousCurrentTrack = playlistTable.querySelector("#currentTrackInPlaylist");
@@ -129,16 +150,10 @@ function refreshCurrentTrack(currentVideoLabel, currentTrackLabel, noTrackLabel,
       }
 
       // Update other labels
-      currentVideoLabel.className = "secondaryTitle";
+      secondaryPopupLabel.className = "secondaryTitle";
       noTrackLabel.setAttribute("style", "display: none");
     } else {
-      // Hide current track label
-      currentTrackLabel.setAttribute("style", "display: none");
-
-      // Update other labels
-      currentVideoLabel.className = "primaryTitle";
-      noTrackLabel.setAttribute("style", "display: inline");
-      noTrackLabel.textContent = chrome.i18n.getMessage("noTracklist");
+      setNoTrackLayout(secondaryPopupLabel, mainPopupLabel, noTrackLabel);
     }
   });
 }
