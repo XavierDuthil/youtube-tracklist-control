@@ -27,8 +27,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "heartbeat":
       sendResponse(true);
       return;
-    case "getCurrentVideo":
-      sendResponse(getCurrentVideo());
+    case "getCurrentVideoName":
+      sendResponse(getCurrentVideoName());
       return;
     case "getCurrentTrackNum":
       sendResponse(getCurrentTrackNum());
@@ -76,7 +76,7 @@ function getElements() {
   descriptionElement = document.getElementById("description");
 }
 
-function getCurrentVideo() {
+function getCurrentVideoName() {
   if (!titleElement) {
     getElements();
   }
@@ -173,7 +173,7 @@ function getCurrentTrackNum() {
   if (tracklist.length === 0) {
     tracklist = buildTrackList();
     if (tracklist.length === 0) {
-      return;
+      return null;
     }
   }
 
@@ -190,15 +190,6 @@ function getCurrentTrackNum() {
   return parseInt(currentTrackNum);
 }
 
-function getCurrentTrack() {
-  return tracklist[getCurrentTrackNum()] || null;
-}
-
-function getCurrentTrackTitle() {
-  var currentTrack = getCurrentTrack();
-  return currentTrack ? currentTrack["title"] : null
-}
-
 function buildTrackList() {
   if (!descriptionElement) {
     getElements();
@@ -206,7 +197,7 @@ function buildTrackList() {
 
   // Try building tracklist from description
   var tracklist = tryBuildingTracklistFrom(descriptionElement);
-  if (tracklist.length < minimumTracklistSizeAccepted) {
+  if (tracklist.length >= minimumTracklistSizeAccepted) {
     return tracklist;
   }
 

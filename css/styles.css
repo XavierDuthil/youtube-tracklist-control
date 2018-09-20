@@ -53,12 +53,12 @@ h5 {
     padding: 5px;
 }
 
-#currentTrackLabel {
+#mainPopupLabel {
     margin-bottom: 0;
     text-shadow: 0 0 2px #AAAAAA;
 }
 
-#currentVideoLabel {
+#secondaryPopupLabel {
     text-shadow: 0 0 1px #BBBBBB;
 }
 
