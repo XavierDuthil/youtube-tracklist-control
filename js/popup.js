@@ -108,8 +108,8 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
   // Add click event to the refresh button
   refreshButton.addEventListener("click",  function () {
     // Inject script if no response is received
-    chrome.tabs.sendMessage(currentTab.id, "getCurrentVideo", function (response) {
-      if (response === undefined) {
+    chrome.tabs.sendMessage(currentTab.id, "heartbeat", function (response) {
+      if (!response) {
         backgroundPage.injectIntoTab(currentTab);
       }
     });
