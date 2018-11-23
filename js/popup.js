@@ -118,6 +118,11 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tab){
     refreshPopup();
   });
 
+  // Add click event to the settings button
+  document.getElementById('settingsButton').addEventListener("click",  function () {
+    chrome.tabs.create({url: 'chrome://extensions/configureCommands'});
+  });
+
   // Add click events to the tracklist
   tracklistTable.addEventListener("click", function (event) {
     var clickedTrElement = event.target.parentElement;
