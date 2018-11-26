@@ -5,7 +5,7 @@ This extension provides useful functionalities when watching music-compilation v
 
 This extension builds its own interactive tracklist by scanning for timestamped tracks in the video description or comments.  
 
-The tracklist can be displayed from any tab and controlled via global keyboard shortcuts (defaults are the keyboard's media buttons, configurable from the "Extensions" settings).
+The tracklist can be displayed from any tab and controlled via configurable global keyboard shortcuts (defaults are the keyboard's media buttons).
 
 ![Screenshot](img/screenshot.png)
 
