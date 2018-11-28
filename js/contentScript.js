@@ -1,5 +1,6 @@
 var currentUrl, titleElement, videoElement, nextButtonElement, descriptionElement, tracklist;
 var timestampRegex = /(\d+:)?(\d?\d):(\d\d)/;
+var minimumTracklistSizeAccepted = 2;
 
 /*
   TrackList is an ordered array, of the form: [
@@ -23,8 +24,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   }
 
   switch (message) {
-    case "getCurrentVideo":
-      sendResponse(getCurrentVideo());
+    case "heartbeat":
+      sendResponse(true);
+      return;
+    case "getCurrentVideoName":
+      sendResponse(getCurrentVideoName());
       return;
     case "getCurrentTrackNum":
       sendResponse(getCurrentTrackNum());
@@ -72,7 +76,7 @@ function getElements() {
   descriptionElement = document.getElementById("description");
 }
 
-function getCurrentVideo() {
+function getCurrentVideoName() {
   if (!titleElement) {
     getElements();
   }
@@ -169,7 +173,7 @@ function getCurrentTrackNum() {
   if (tracklist.length === 0) {
     tracklist = buildTrackList();
     if (tracklist.length === 0) {
-      return;
+      return null;
     }
   }
 
@@ -186,32 +190,29 @@ function getCurrentTrackNum() {
   return parseInt(currentTrackNum);
 }
 
-function getCurrentTrack() {
-  return tracklist[getCurrentTrackNum()] || null;
-}
-
-function getCurrentTrackTitle() {
-  var currentTrack = getCurrentTrack();
-  return currentTrack ? currentTrack["title"] : null
-}
-
 function buildTrackList() {
   if (!descriptionElement) {
     getElements();
   }
-  var tracklist = tryBuildingTracklistFrom(descriptionElement);
 
-  if (tracklist.length === 0) {
-    var commentElements = document.querySelectorAll('yt-formatted-string.ytd-comment-renderer#content-text');
-    for (var idx in commentElements) {
-      var commentElement = commentElements[idx];
-      tracklist = tryBuildingTracklistFrom(commentElement);
-      if (tracklist.length > 0)
-        break;
+  // Try building tracklist from description
+  var tracklist = tryBuildingTracklistFrom(descriptionElement);
+  if (tracklist.length >= minimumTracklistSizeAccepted) {
+    return tracklist;
+  }
+
+  // No tracklist found in description: search in comments
+  var commentElements = document.querySelectorAll('yt-formatted-string.ytd-comment-renderer#content-text');
+  for (var idx in commentElements) {
+    var commentElement = commentElements[idx];
+    tracklist = tryBuildingTracklistFrom(commentElement);
+    if (tracklist.length >= minimumTracklistSizeAccepted) {
+      return tracklist;
     }
   }
 
-  return tracklist
+  // No tracklist found
+  return [];
 }
 
 function tryBuildingTracklistFrom(htmlElement) {
