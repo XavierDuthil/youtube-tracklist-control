@@ -191,21 +191,38 @@ function refreshTracklist(tracklistTable) {
     tracklistCache = tracklist;
 
     if (tracklist) {
-      var tableContent = "<tbody>";
-      // tableContent += "<tr><th>N#</th><th>Title</th><th>Time</th></tr>";
+      // Clean table
+      while (tracklistTable.lastChild) {
+        tracklistTable.removeChild(tracklistTable.lastChild);
+      }
+
+      // Build new table
+      var tbodyElement = document.createElement("tbody");
       for (var trackIdx in tracklist) {
         var trackInfo = tracklist[trackIdx];
         var trackNum = parseInt(trackIdx) + 1;
         trackNum = (trackNum < 10) ? ("0" + trackNum) : trackNum;
-        tableContent += "<tr>" +
-          "<td class=\"trackNumColumn\">" + trackNum + "</td>" +
-          "<td class=\"trackNameColumn\">" + trackInfo["title"] + "</td>" +
-          "<td class=\"trackTimeColumn\">" + secondsToDisplayTime(trackInfo["duration"]) + "</td>" +
-          "</tr>";
+
+        var rowElement = document.createElement("tr");
+        var trackNumCell = document.createElement("td");
+        trackNumCell.className = "trackNumColumn";
+        trackNumCell.textContent = "" + trackNum;
+
+        var trackNameCell = document.createElement("td");
+        trackNameCell.className = "trackNameColumn";
+        trackNameCell.textContent = "" + trackInfo["title"];
+
+        var trackTimeCell = document.createElement("td");
+        trackTimeCell.className = "trackTimeColumn";
+        trackTimeCell.textContent = "" + secondsToDisplayTime(trackInfo["duration"]);
+
+        rowElement.appendChild(trackNumCell);
+        rowElement.appendChild(trackNameCell);
+        rowElement.appendChild(trackTimeCell);
+        tbodyElement.appendChild(rowElement);
       }
 
-      tableContent += "</tbody>";
-      tracklistTable.innerHTML = tableContent;
+      tracklistTable.appendChild(tbodyElement);
       tracklistTable.setAttribute("style", "display: table");
     } else {
       tracklistTable.setAttribute("style", "display: none");
@@ -239,8 +256,8 @@ function setTracklistLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, t
   }
 
   // Highlight current track in tracklist and add progress bar
-  if (tracklistTable.firstChild) {
-    var newCurrentTrack = tracklistTable.firstChild.childNodes[currentTrackNumCache];
+  if (tracklistTable.lastChild && tracklistTable.lastChild.lastChild) {
+    var newCurrentTrack = tracklistTable.lastChild.childNodes[currentTrackNumCache];
     newCurrentTrack.setAttribute("id", "currentTrackInPlaylist");
     newCurrentTrack.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
     trackProgressBarElement = tracklistTable.insertRow(currentTrackNumCache + 1);
