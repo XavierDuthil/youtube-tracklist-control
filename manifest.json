@@ -30,7 +30,6 @@
     "notifications",
     "storage",
     "tabs",
-    "background",
     "*://*.youtube.com/*"
   ],
 
@@ -46,30 +45,25 @@
       "suggested_key": {
         "default": "MediaPrevTrack"
       },
-      "description": "Previous track",
-      "global": true
+      "description": "Previous track"
     },
     "cmd_rewind": {
-      "description": "Rewind 5 seconds",
-      "global": true
+      "description": "Rewind 5 seconds"
     },
     "cmd_play_pause": {
       "suggested_key": {
         "default": "MediaPlayPause"
       },
-      "description": "Play/pause",
-      "global": true
+      "description": "Play/pause"
     },
     "cmd_fast_forward": {
-      "description": "Fast forward 5 seconds",
-      "global": true
+      "description": "Fast forward 5 seconds"
     },
     "cmd_next_track": {
       "suggested_key": {
         "default": "MediaNextTrack"
       },
-      "description": "Next track",
-      "global": true
+      "description": "Next track"
     }
   }
 }
