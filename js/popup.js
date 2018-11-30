@@ -85,7 +85,7 @@ function refreshPopup(currentTab) {
   if (hardRefreshesToDo > 0) {
     hardRefreshesToDo--;
     backgroundPage.purgeCache();
-    backgroundPage.refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel); // FIXME: Include into refreshCurrentTrack?
+    backgroundPage.refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable); // FIXME: Include into refreshCurrentTrack?
     backgroundPage.refreshTracklist(tracklistTable);
   }
 

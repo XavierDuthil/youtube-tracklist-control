@@ -162,7 +162,7 @@ function refreshProgressBar(currentTime) {
 // Transforms a number of seconds to a printable "xx:xx:xx" string
 function secondsToDisplayTime(seconds) {
   var date = new Date(null);
-  date.setSeconds(seconds);
+  date.setSeconds(seconds || 0);
   var dateISO = date.toISOString();
   return seconds >= 3600 ? dateISO.substr(11, 8) : dateISO.substr(14, 5);
 }
@@ -246,6 +246,10 @@ function setNoTrackLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel) {
 }
 
 function setTracklistLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable) {
+  if (!tracklistCache || !tracklistCache[currentTrackNumCache]) {
+    return;
+  }
+
   // Remove previously highlighted track in tracklist
   var previousCurrentTrack = tracklistTable.querySelector("#currentTrackInPlaylist");
   if (previousCurrentTrack !== null) {
