@@ -259,7 +259,6 @@ function setTracklistLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, t
   if (tracklistTable.lastChild && tracklistTable.lastChild.lastChild) {
     var newCurrentTrack = tracklistTable.lastChild.childNodes[currentTrackNumCache];
     newCurrentTrack.setAttribute("id", "currentTrackInPlaylist");
-    newCurrentTrack.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
     trackProgressBarElement = tracklistTable.insertRow(currentTrackNumCache + 1);
     trackProgressBarElement2 = tracklistTable.insertRow(currentTrackNumCache + 2);
     trackProgressBarElement.className = "progressBar";
@@ -267,6 +266,9 @@ function setTracklistLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, t
     var progressBarCell = trackProgressBarElement.insertCell();
     progressBarCell.rowSpan = 2;
     progressBarCell.colSpan = 3;
+
+    // Scroll to progress bar
+    trackProgressBarElement.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
   }
 
   // Update other labels
