@@ -29,8 +29,7 @@
     "activeTab",
     "tabs",
     "background",
-    "http://*.youtube.com/*",
-    "https://*.youtube.com/*"
+    "*://*.youtube.com/*"
   ],
 
   "content_scripts": [
