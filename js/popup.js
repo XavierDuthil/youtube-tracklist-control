@@ -85,11 +85,10 @@ function refreshPopup(currentTab) {
   if (hardRefreshesToDo > 0) {
     hardRefreshesToDo--;
     backgroundPage.purgeCache();
-    backgroundPage.refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable); // FIXME: Include into refreshCurrentTrack?
+    backgroundPage.refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable);
     backgroundPage.refreshTracklist(tracklistTable);
   }
 
-  // FIXME: Need to give currentVideoName, or it must retrieve it from cache
   backgroundPage.refreshCurrentTrack(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable);
   backgroundPage.refreshCurrentTime(currentTimeLabel);
   backgroundPage.refreshPaused(playOrPauseButton);

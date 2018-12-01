@@ -85,7 +85,7 @@ function refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel, 
 
 function refreshCurrentTrack(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable) {
   chrome.tabs.sendMessage(trackedTabId, "getCurrentTrackNum", function (currentTrackNum) {
-    if (tracklistCache === null || (currentTrackNumCache !== null && currentTrackNumCache === currentTrackNum)) {
+    if (currentTrackNumCache !== null && currentTrackNumCache === currentTrackNum) {
       return;
     }
     currentTrackNumCache = currentTrackNum;
@@ -96,7 +96,7 @@ function refreshCurrentTrack(mainPopupLabel, secondaryPopupLabel, noTrackLabel, 
     }
 
     var waitingTime = 0;
-    if (tracklistCache === null) {
+    if (!tracklistCache || tracklistCache.length === 0) {
       refreshTracklist(tracklistTable);
       waitingTime = tracklistUpdateWaitingTime; // Refresh the layout after 50ms to wait for the tracklist cache update to succeed
     }
