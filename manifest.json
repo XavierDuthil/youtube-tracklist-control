@@ -43,7 +43,7 @@
   "commands": {
     "cmd_previous_track": {
       "suggested_key": {
-        "default": "MediaPrevTrack"
+        "default": "Alt+I"
       },
       "description": "Previous track"
     },
@@ -52,7 +52,7 @@
     },
     "cmd_play_pause": {
       "suggested_key": {
-        "default": "MediaPlayPause"
+        "default": "Alt+P"
       },
       "description": "Play/pause"
     },
@@ -61,7 +61,7 @@
     },
     "cmd_next_track": {
       "suggested_key": {
-        "default": "MediaNextTrack"
+        "default": "Alt+O"
       },
       "description": "Next track"
     }
