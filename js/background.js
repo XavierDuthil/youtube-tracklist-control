@@ -11,10 +11,61 @@ var trackedTabUrl = null;
 var injectableUrlRegex = /youtube.com\/watch/gi;
 var tracklistUpdateWaitingTime = 50; // Milliseconds to wait for the tracklist update to succeed
 
-function setTrackedTab(newTrackTab) {
-  trackedTabId = newTrackTab.id;
-  trackedTabUrl = newTrackTab.url;
+function init() {
+  trackLastYoutubeTabOrThisOne(null);
+}
+
+function trackLastYoutubeTabOrThisOne(tabToTrackIfNoCandidate) {
+  setTrackedTab(null);
+  chrome.windows.getAll({populate: true}, function (windows) {
+    var windowsCount = windows.length;
+    var currentWindow;
+    var tabToTrack;
+
+    // Browse all tabs from all windows
+    for (var i = 0; i < windowsCount; i++) {
+      currentWindow = windows[i];
+      var tabsCount = currentWindow.tabs.length;
+      var currentTab;
+
+      for (var j = 0; j < tabsCount; j++) {
+        currentTab = currentWindow.tabs[j];
+
+        // Select the last Youtube video tab
+        if (currentTab.url.match(injectableUrlRegex)) {
+          tabToTrack = currentTab;
+        }
+      }
+    }
+
+    // Track the selected tab
+    if (tabToTrack) {
+      setTrackedTab(tabToTrack);
+    } else if (tabToTrackIfNoCandidate) {
+      setTrackedTab(tabToTrackIfNoCandidate);
+    }
+  });
+}
+
+function setTrackedTab(newTrackedTab) {
   purgeCache();
+  if (!newTrackedTab) {
+    trackedTabId = null;
+    trackedTabUrl = null;
+    return;
+  }
+
+  trackedTabId = newTrackedTab.id;
+  trackedTabUrl = newTrackedTab.url;
+
+  // Inject script if no script heartbeat response is received from this tab
+  chrome.tabs.sendMessage(newTrackedTab.id, "heartbeat", function (response) {
+    if (!response) {
+      chrome.runtime.lastError; // Silence the error by accessing the variable
+      injectContentScriptIntoTab(newTrackedTab);
+    }
+  });
+
   activateKeyboardShortcuts()
 }
 
@@ -26,6 +77,26 @@ function purgeCache() {
   tracklistCache = null;
   trackProgressBarElement = null;
   trackProgressBarElement2 = null;
+}
+
+// Inject contentScript into a specific tab
+function injectContentScriptIntoTab(tab) {
+  if (!tab.id || !tab.url) {
+    return;
+  }
+
+  try {
+    var scripts = chrome.runtime.getManifest().content_scripts[0].js;
+    for (var i = 0; i < scripts.length; i++) {
+      if (tab.url.match(injectableUrlRegex)) {
+        chrome.tabs.executeScript(tab.id, {
+          file: scripts[i]
+        });
+      }
+    }
+  } catch (e) {
+    console.log("Unable to inject content script in tab URL " + tab.url + ": " + e)
+  }
 }
 
 // Reset the keyboard shortcuts and activate them for the given tab
@@ -68,8 +139,36 @@ function goToTrack(trackIdx) {
   chrome.tabs.sendMessage(trackedTabId, "goToTrack" + trackIdx);
 }
 
-function refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable) {
+function hardRefresh(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable, currentTimeLabel, playOrPauseButton) {
+  if (!trackedTabId) {
+    setNoVideoLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, currentTimeLabel);
+    setNoTrackLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel);
+    currentTimeLabel.setAttribute("style", "display: none");
+    return;
+  }
+
+  purgeCache();
+  refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable, currentTimeLabel);
+  refreshTracklist(tracklistTable);
+
+  softRefresh(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable, currentTimeLabel, playOrPauseButton);
+}
+
+function softRefresh(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable, currentTimeLabel, playOrPauseButton) {
+  if (!trackedTabId) {
+    setNoTrackLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel);
+    currentTimeLabel.setAttribute("style", "display: none");
+    return;
+  }
+
+  refreshCurrentTrack(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable);
+  refreshCurrentTime(currentTimeLabel);
+  refreshPaused(playOrPauseButton);
+}
+
+function refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable, currentTimeLabel) {
   chrome.tabs.sendMessage(trackedTabId, "getCurrentVideoName", function (currentVideoName) {
+    chrome.runtime.lastError; // Silence the error by accessing the variable
     if (currentVideoNameCache !== null && currentVideoNameCache === currentVideoName) {
       return;
     }
@@ -78,13 +177,14 @@ function refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel, 
     if (currentVideoName) {
       refreshCurrentTrack(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable)
     } else {
-      setNoVideoLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel);
+      setNoVideoLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, currentTimeLabel);
     }
   });
 }
 
 function refreshCurrentTrack(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable) {
   chrome.tabs.sendMessage(trackedTabId, "getCurrentTrackNum", function (currentTrackNum) {
+    chrome.runtime.lastError; // Silence the error by accessing the variable
     if (currentTrackNumCache !== null && currentTrackNumCache === currentTrackNum) {
       return;
     }
@@ -109,6 +209,7 @@ function refreshCurrentTrack(mainPopupLabel, secondaryPopupLabel, noTrackLabel, 
 
 function refreshCurrentTime(currentTimeLabel) {
   chrome.tabs.sendMessage(trackedTabId, "getCurrentTime", function (currentTimeFloat) {
+    chrome.runtime.lastError; // Silence the error by accessing the variable
     // If no response: hide the current time label
     if (!currentTimeFloat && currentTimeFloat !== 0) {
       currentTimeLabel.setAttribute("style", "display: none");
@@ -169,7 +270,12 @@ function secondsToDisplayTime(seconds) {
 
 // Refresh the play/pause button
 function refreshPaused(playOrPauseButtonLabel) {
+  if (!trackedTabId) {
+    playOrPauseButtonLabel.setAttribute('src', 'img/play_pause.png');
+    return;
+  }
   chrome.tabs.sendMessage(trackedTabId, "getPaused", function (paused) {
+    chrome.runtime.lastError; // Silence the error by accessing the variable
     if (pausedCache !== null && pausedCache === paused)
       return;
     pausedCache = paused;
@@ -186,6 +292,7 @@ function refreshPaused(playOrPauseButtonLabel) {
 
 function refreshTracklist(tracklistTable) {
   chrome.tabs.sendMessage(trackedTabId, "getTracklist", function (tracklist) {
+    chrome.runtime.lastError; // Silence the error by accessing the variable
     if (tracklistCache !== null && JSON.stringify(tracklistCache) === JSON.stringify(tracklist))
       return;
     tracklistCache = tracklist;
@@ -230,11 +337,12 @@ function refreshTracklist(tracklistTable) {
   });
 }
 
-function setNoVideoLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel) {
+function setNoVideoLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, currentTimeLabel) {
   mainPopupLabel.textContent = chrome.i18n.getMessage("noVideo");
   mainPopupLabel.setAttribute("style", "display: block");
   secondaryPopupLabel.setAttribute("style", "display: none");
   noTrackLabel.setAttribute("style", "display: none");
+  currentTimeLabel.setAttribute("style", "display: none");
 }
 
 function setNoTrackLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel) {
@@ -283,48 +391,4 @@ function setTracklistLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, t
   noTrackLabel.setAttribute("style", "display: none");
 }
 
-
-// Inject contentScript on upgrade/install into all youtube tabs
-chrome.windows.getAll({
-  populate: true
-}, function (windows) {
-  var i = 0, w = windows.length, currentWindow;
-  var tabToTrack = null;
-  for( ; i < w; i++ ) {
-    currentWindow = windows[i];
-    var j = 0, t = currentWindow.tabs.length, currentTab;
-    for( ; j < t; j++ ) {
-      currentTab = currentWindow.tabs[j];
-      // Proceed only with youtube pages
-      if(currentTab.url.match(injectableUrlRegex) ) {
-        injectIntoTab(currentTab);
-        tabToTrack = currentTab;
-      }
-    }
-  }
-
-  // Activate keyboard shortcuts for the last Youtube video tab detected
-  if (tabToTrack) {
-    setTrackedTab(tabToTrack);
-  }
-});
-
-// Inject contentScript into a specific tab
-var injectIntoTab = function (tab) {
-  if (!tab.id || !tab.url) {
-    return;
-  }
-
-  try {
-    var scripts = chrome.runtime.getManifest().content_scripts[0].js;
-    for (var i = 0; i < scripts.length; i++) {
-      if (tab.url.match(injectableUrlRegex)) {
-        chrome.tabs.executeScript(tab.id, {
-          file: scripts[i]
-        });
-      }
-    }
-  } catch (e) {
-    console.log("Unable to inject content script in tab URL " + tab.url + ": " + e)
-  }
-};
+init();

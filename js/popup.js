@@ -14,7 +14,7 @@ var playOrPauseButton;
 var tracklistTable;
 var refreshButton;
 
-chrome.tabs.query({'active': true,'currentWindow': true}, function(tabs){
+chrome.tabs.query({'active': true,'currentWindow': true}, function(tabs) {
   secondaryPopupLabel = document.getElementById("secondaryPopupLabel");
   mainPopupLabel = document.getElementById("mainPopupLabel");
   noTrackLabel = document.getElementById("noTrackLabel");
@@ -23,9 +23,12 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tabs){
   tracklistTable = document.getElementById("tracklistTable");
   refreshButton = document.getElementById("refreshButton");
 
-  var currentTab = tabs[0];
-  hardRefreshesToDo = 1;
+  // On popup opening, reset the tracked tab if not a Youtube video
+  if (!backgroundPage.currentVideoNameCache) {
+    backgroundPage.trackedTabId = null;
+  }
 
+  var currentTab = tabs[0];
   startRefreshTicker(currentTab);
   addEvents(currentTab);
 });
@@ -33,6 +36,7 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tabs){
 function startRefreshTicker(currentTab) {
   refreshPopup(currentTab);
 
+  // Refresh rapidly on popup opening, then slow down to normal refresh rate
   window.setTimeout(function () {
     refreshPopup(currentTab);
   }, config["initial_refresh_period"]);
@@ -52,7 +56,7 @@ function refreshPopup(currentTab) {
     return;
   }
 
-  if (backgroundPage.trackedTabId && backgroundPage.trackedTabId !== undefined) {
+  if (backgroundPage.trackedTabId) {
     // Update refresh button visual state
     if (backgroundPage.trackedTabId === currentTab.id) {
       refreshButton.className = "buttonActive"
@@ -61,37 +65,34 @@ function refreshPopup(currentTab) {
     }
 
     chrome.tabs.get(backgroundPage.trackedTabId, function (trackedTab) {
-      // Don't hard refresh the tracklist if the tracked tab is still on the same URL
-      if (trackedTab.url === backgroundPage.trackedTabUrl) {
+      chrome.runtime.lastError; // Silence the error by accessing the variable
+
+      // If the tracked tab has been closed, notify background
+      if (trackedTab === undefined) {
+        backgroundPage.setTrackedTab(null);
         return;
       }
 
-      // If the tracked tab has been closed, set the current one as tracked
-      if (trackedTab === undefined) {
-        backgroundPage.setTrackedTab(currentTab)
-      } else {
-        backgroundPage.setTrackedTab(trackedTab)
+      // If the tracked tab has changed URL, hard refresh
+      if (trackedTab.url !== backgroundPage.trackedTabUrl) {
+        hardRefreshesToDo = 3;
       }
-
-      hardRefreshesToDo = 3;
     });
   }
 
+  // No tracked tab => track this one
   if (!backgroundPage.trackedTabId) {
-    backgroundPage.setTrackedTab(currentTab)
+    backgroundPage.trackLastYoutubeTabOrThisOne(currentTab);
+    hardRefreshesToDo = 3;
   }
 
-  // The first refreshes don't always succeed, need to repeat for a while
+  // The first refreshes don't always succeed (due to page loading time), need to repeat for a while
   if (hardRefreshesToDo > 0) {
     hardRefreshesToDo--;
-    backgroundPage.purgeCache();
-    backgroundPage.refreshCurrentVideo(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable);
-    backgroundPage.refreshTracklist(tracklistTable);
+    backgroundPage.hardRefresh(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable, currentTimeLabel, playOrPauseButton);
+  } else {
+    backgroundPage.softRefresh(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable, currentTimeLabel, playOrPauseButton);
   }
-
-  backgroundPage.refreshCurrentTrack(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable);
-  backgroundPage.refreshCurrentTime(currentTimeLabel);
-  backgroundPage.refreshPaused(playOrPauseButton);
 }
 
 function addEvents(currentTab) {
@@ -119,12 +120,6 @@ function addEvents(currentTab) {
 
   // Add click event to the refresh button
   refreshButton.addEventListener("click",  function () {
-    // Inject script if no response is received
-    chrome.tabs.sendMessage(currentTab.id, "heartbeat", function (response) {
-      if (!response) {
-        backgroundPage.injectIntoTab(currentTab);
-      }
-    });
     backgroundPage.setTrackedTab(currentTab);
     refreshButton.className = "buttonActive";
     hardRefreshesToDo++;
