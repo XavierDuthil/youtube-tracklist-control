@@ -10,9 +10,11 @@ var trackedTabId = null;
 var trackedTabUrl = null;
 var injectableUrlRegex = /youtube.com\/watch/gi;
 var tracklistUpdateWaitingTime = 50; // Milliseconds to wait for the tracklist update to succeed
+var trackedTabUpdateWaitingTime = 50; // Milliseconds to wait for the tracked tab update
 
 function init() {
   trackLastYoutubeTabOrThisOne(null);
+  activateKeyboardShortcuts();
 }
 
 function trackLastYoutubeTabOrThisOne(tabToTrackIfNoCandidate) {
@@ -65,8 +67,6 @@ function setTrackedTab(newTrackedTab) {
       injectContentScriptIntoTab(newTrackedTab);
     }
   });
-
-  activateKeyboardShortcuts()
 }
 
 function purgeCache() {
@@ -79,7 +79,6 @@ function purgeCache() {
   trackProgressBarElement2 = null;
 }
 
-// Inject contentScript into a specific tab
 function injectContentScriptIntoTab(tab) {
   if (!tab.id || !tab.url) {
     return;
@@ -99,25 +98,59 @@ function injectContentScriptIntoTab(tab) {
   }
 }
 
-// Reset the keyboard shortcuts and activate them for the given tab
 function activateKeyboardShortcuts() {
-  if (currentKeyboardShortcutsListener) {
-    chrome.commands.onCommand.removeListener(currentKeyboardShortcutsListener);
-  }
-  currentKeyboardShortcutsListener = function(command) {
-    switch (command) {
-      case "cmd_play_pause":
-        chrome.tabs.sendMessage(trackedTabId, "playOrPause");
-        break;
-      case "cmd_previous_track":
-        chrome.tabs.sendMessage(trackedTabId, "previousTrack");
-        break;
-      case "cmd_next_track":
-        chrome.tabs.sendMessage(trackedTabId, "nextTrack");
-        break;
+  chrome.commands.onCommand.addListener(
+    function(command) {
+      var message;
+      switch (command) {
+        case "cmd_play_pause":
+          message = "playOrPause";
+          break;
+        case "cmd_previous_track":
+          message = "previousTrack";
+          break;
+        case "cmd_next_track":
+          message = "nextTrack";
+          break;
+        default:
+          return;
+      }
+
+      if (trackedTabId !== null) {
+        sendMessageToTrackedTab(message);
+      } else {
+        sendMessageToUnknownTab(message);
+      }
     }
-  };
-  chrome.commands.onCommand.addListener(currentKeyboardShortcutsListener);
+  );
+}
+
+function sendMessageToTrackedTab(message) {
+  // Verify that the tracked tab exists and has functioning script
+  chrome.tabs.sendMessage(trackedTabId, "heartbeat", function (response) {
+    chrome.runtime.lastError; // Silence the error by accessing the variable
+
+    // If the tracked tab is fine, send the message to it
+    if (response) {
+      chrome.tabs.sendMessage(trackedTabId, message);
+      return;
+    }
+
+    // If not, track a new tab and send the message to it
+    sendMessageToUnknownTab(message);
+  });
+}
+
+function sendMessageToUnknownTab(message) {
+  // Find a Youtube tab to track
+  trackLastYoutubeTabOrThisOne(null);
+
+  // Wait for the update to occur, then send command to the newly tracked tab if there is one
+  setTimeout(function() {
+    if (trackedTabId !== null) {
+      chrome.tabs.sendMessage(trackedTabId, message);
+    }
+  }, trackedTabUpdateWaitingTime);
 }
 
 function playOrPause() {
