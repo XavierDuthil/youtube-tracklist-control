@@ -75,6 +75,7 @@ function refreshPopup(currentTab) {
 
       // If the tracked tab has changed URL, hard refresh
       if (trackedTab.url !== backgroundPage.trackedTabUrl) {
+        backgroundPage.setTrackedTab(trackedTab);
         hardRefreshesToDo = 3;
       }
     });
