@@ -103,11 +103,17 @@ function activateKeyboardShortcuts() {
     function(command) {
       var message;
       switch (command) {
+        case "cmd_previous_track":
+          message = "previousTrack";
+          break;
+        case "cmd_rewind":
+          message = "rewind";
+          break;
         case "cmd_play_pause":
           message = "playOrPause";
           break;
-        case "cmd_previous_track":
-          message = "previousTrack";
+        case "cmd_fast_forward":
+          message = "fastForward";
           break;
         case "cmd_next_track":
           message = "nextTrack";

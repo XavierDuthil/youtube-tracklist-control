@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "version": "2.4.1",
+  "version": "2.5.0",
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
@@ -44,7 +44,11 @@
       "suggested_key": {
         "default": "MediaPrevTrack"
       },
-      "description": "Go to previous track",
+      "description": "Previous track",
+      "global": true
+    },
+    "cmd_rewind": {
+      "description": "Rewind 5 seconds",
       "global": true
     },
     "cmd_play_pause": {
@@ -54,11 +58,15 @@
       "description": "Play/pause",
       "global": true
     },
+    "cmd_fast_forward": {
+      "description": "Fast forward 5 seconds",
+      "global": true
+    },
     "cmd_next_track": {
       "suggested_key": {
         "default": "MediaNextTrack"
       },
-      "description": "Go to next track",
+      "description": "Next track",
       "global": true
     }
   }
