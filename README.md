@@ -13,7 +13,7 @@ The tracklist can be displayed from any tab and controlled via configurable glob
 - Media control (play, pause, rewind, fast-forward, previous track, next track)
 - Tracklist building from the video description or comments
 - Tracklist navigation
-- Progress bar on current song
+- Progress bar on current song (clickable)
 - Support of keyboard media keys (configurable global keyboard shortcuts)
 - Cross-tab interactivity (view and control the tracklist from any tab)
 
