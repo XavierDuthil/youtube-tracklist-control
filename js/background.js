@@ -175,7 +175,10 @@ function fastForward() {
   chrome.tabs.sendMessage(trackedTabId, "fastForward");
 }
 function goToTrack(trackIdx) {
-  chrome.tabs.sendMessage(trackedTabId, "goToTrack" + trackIdx);
+  chrome.tabs.sendMessage(trackedTabId, "goToTrack:" + trackIdx);
+}
+function goToPercent(percent) {
+  chrome.tabs.sendMessage(trackedTabId, "goToPercent:" + percent);
 }
 
 function hardRefresh(mainPopupLabel, secondaryPopupLabel, noTrackLabel, tracklistTable, currentTimeLabel, playOrPauseButton) {

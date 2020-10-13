@@ -136,8 +136,10 @@ function addEvents(currentTab) {
   tracklistTable.addEventListener("click", function (event) {
     var clickedTrElement = event.target.parentElement;
 
-    // Do nothing when progressBar is clicked
+    // Go to position when progressBar is clicked
     if (clickedTrElement.className === "progressBar") {
+      backgroundPage.goToPercent(Math.round(event.offsetX / clickedTrElement.offsetWidth * 100));
+      refreshPopup(currentTab);
       return;
     }
 

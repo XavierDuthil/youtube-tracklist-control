@@ -23,7 +23,10 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     currentUrl = location.href;
   }
 
-  switch (message) {
+  var args = message.split(':');
+  var method = args[0];
+
+  switch (method) {
     case "heartbeat":
       sendResponse(true);
       return;
@@ -58,14 +61,12 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "fastForward":
       fastForward();
       return;
-  }
-
-  if (message.startsWith("goToTrack")) {
-    var match = message.match(/goToTrack(\d+)/);
-    if (match === null) {
+    case "goToTrack":
+      goToTrack(+args[1]);
       return;
-    }
-    goToTrack(parseInt(match[1]));
+    case "goToPercent":
+      goToPercent(+args[1]);
+      return;
   }
 });
 
@@ -141,6 +142,12 @@ function goToTrack(trackIdx) {
     tracklist = buildTrackList();
   }
   videoElement.currentTime = tracklist[trackIdx]["startTime"];
+}
+
+function goToPercent(percent) {
+  var currentTrackNum = getCurrentTrackNum();
+  var currentTrack = tracklist[currentTrackNum];
+  videoElement.currentTime = currentTrack["startTime"] + currentTrack["duration"] * percent / 100;
 }
 
 function rewind() {
