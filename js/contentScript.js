@@ -71,7 +71,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 });
 
 function getElements() {
-  titleElement = document.querySelectorAll("h1.title")[0];
+  titleElement = document.querySelectorAll("h1.title.ytd-video-primary-info-renderer")[0];
   videoElement = document.getElementsByTagName("video")[0];
   nextButtonElement = document.getElementsByClassName("ytp-next-button")[0];
   descriptionElement = document.getElementById("description");
