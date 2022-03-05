@@ -416,7 +416,7 @@ function setTracklistLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, t
     trackProgressBarElement = tracklistTable.insertRow(currentTrackNumCache + 1);
     trackProgressBarElement2 = tracklistTable.insertRow(currentTrackNumCache + 2);
     trackProgressBarElement.className = "progressBar";
-    trackProgressBarElement2.className = "progressBar";
+    trackProgressBarElement2.className = "progressBarHidden"; // Hidden, but used to compensate the visual shift due to added row
     var progressBarCell = trackProgressBarElement.insertCell();
     progressBarCell.rowSpan = 2;
     progressBarCell.colSpan = 3;

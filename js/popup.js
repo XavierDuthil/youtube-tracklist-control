@@ -152,7 +152,7 @@ function addEvents(currentTab) {
         break;
       }
 
-      if (trElement.className !== "progressBar") {
+      if (trElement.className !== "progressBar" && trElement.className !== "progressBarHidden") {
         trackIdx++;
       }
     }

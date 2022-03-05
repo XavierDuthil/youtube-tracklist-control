@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix extraction of YouTube video name
 - Fix extraction of YouTube video description for tracklist building
+- Fix progressbar display
 
 ## [2.6.0] - 2020-10-13
 ### Added

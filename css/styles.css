@@ -97,9 +97,6 @@ h5 {
     cursor: pointer;
 }
 
-#tracklistTable tr {
-    min-height: 5px;
-}
 
 #tracklistTable th, #tracklistTable td {
     padding: 2px 5px;
@@ -128,6 +125,13 @@ h5 {
     font-weight: 700;
 }
 
+.progressBar {
+    height: 5px;
+}
+
+.progressBarHidden {
+    height: 0px;
+}
 
 /* UNDER THE TRACKLIST */
 img {
