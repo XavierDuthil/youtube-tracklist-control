@@ -74,7 +74,7 @@ function getElements() {
   titleElement = document.querySelectorAll("h1.title.ytd-video-primary-info-renderer")[0];
   videoElement = document.getElementsByTagName("video")[0];
   nextButtonElement = document.getElementsByClassName("ytp-next-button")[0];
-  descriptionElement = document.getElementById("description");
+  descriptionElement = document.querySelector("#content>#description").firstElementChild;
 }
 
 function getCurrentVideoName() {
