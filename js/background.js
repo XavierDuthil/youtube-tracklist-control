@@ -473,30 +473,34 @@ function setNotifications(enabled) {
 
       lastNotifiedTrackNum = trackNum;
 
-      // If only the track number changed, send a notification using the existing tracklist
-      if (videoName === lastNotifiedVideoName && tracklistCacheForNotifications !== null) {
-        sendTrackChangeNotification(videoName, trackNum);
-        return
+      // If the video has changed, the tracklist needs to be rebuilt
+      if (videoName !== lastNotifiedVideoName) {
+        tracklistCacheForNotifications = null;
+        lastNotifiedVideoName = videoName;
       }
 
-      // If the video changed, update the tracklist
-      chrome.tabs.sendMessage(trackedTabId, "getTracklist", function (tracklist) {
-        chrome.runtime.lastError; // Silence the error by accessing the variable
-        if (!tracklist) {
-          tracklist = []
-        }
+      if (!tracklistCacheForNotifications || !tracklistCacheForNotifications[trackNum] || !tracklistCacheForNotifications[trackNum]["title"]) {
+        // If the video changed, update the tracklist
+        chrome.tabs.sendMessage(trackedTabId, "getTracklist", function (tracklist) {
+          chrome.runtime.lastError; // Silence the error by accessing the variable
+          if (!tracklist) {
+            console.log('failed to getTracklist: ' + tracklist);
+            return;
+          }
 
-        lastNotifiedVideoName = videoName;
-        tracklistCacheForNotifications = tracklist;
+          tracklistCacheForNotifications = tracklist;
+          sendTrackChangeNotification(videoName, trackNum);
+        });
+      } else {
         sendTrackChangeNotification(videoName, trackNum);
-      });
+      }
     });
   }, 3000);
 }
 
 function sendTrackChangeNotification(videoName, trackNum) {
   // For an empty tracklist, the title will be the name of the video
-  if (tracklistCacheForNotifications.length === 0 || !tracklistCacheForNotifications[trackNum]) {
+  if (tracklistCacheForNotifications.length === 0) {
     chrome.notifications.create(
       "track_change_notification",
       {
