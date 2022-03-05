@@ -3,6 +3,7 @@ var currentTrackNumCache = null;
 var currentTimeCache = null;
 var pausedCache = null;
 var tracklistCache = null;
+var tracklistCacheForNotifications = null;
 var trackProgressBarElement = null;
 var trackProgressBarElement2 = null;
 var currentKeyboardShortcutsListener = null;
@@ -11,6 +12,9 @@ var trackedTabUrl = null;
 var injectableUrlRegex = /youtube.com\/watch/gi;
 var tracklistUpdateWaitingTime = 50; // Milliseconds to wait for the tracklist update to succeed
 var trackedTabUpdateWaitingTime = 50; // Milliseconds to wait for the tracked tab update
+var lastNotifiedVideoName = null;
+var lastNotifiedTrackNum = null;
+var notificationsTickerIntervalID = null;
 
 function init() {
   trackLastYoutubeTabOrThisOne(null);
@@ -335,47 +339,49 @@ function refreshPaused(playOrPauseButtonLabel) {
 function refreshTracklist(tracklistTable) {
   chrome.tabs.sendMessage(trackedTabId, "getTracklist", function (tracklist) {
     chrome.runtime.lastError; // Silence the error by accessing the variable
-    if (tracklistCache !== null && JSON.stringify(tracklistCache) === JSON.stringify(tracklist))
+    if (tracklistCache !== null && JSON.stringify(tracklistCache) === JSON.stringify(tracklist)) {
       return;
+    }
     tracklistCache = tracklist;
 
-    if (tracklist) {
-      // Clean table
-      while (tracklistTable.lastChild) {
-        tracklistTable.removeChild(tracklistTable.lastChild);
-      }
-
-      // Build new table
-      var tbodyElement = document.createElement("tbody");
-      for (var trackIdx in tracklist) {
-        var trackInfo = tracklist[trackIdx];
-        var trackNum = parseInt(trackIdx) + 1;
-        trackNum = (trackNum < 10) ? ("0" + trackNum) : trackNum;
-
-        var rowElement = document.createElement("tr");
-        var trackNumCell = document.createElement("td");
-        trackNumCell.className = "trackNumColumn";
-        trackNumCell.textContent = "" + trackNum;
-
-        var trackNameCell = document.createElement("td");
-        trackNameCell.className = "trackNameColumn";
-        trackNameCell.textContent = "" + trackInfo["title"];
-
-        var trackTimeCell = document.createElement("td");
-        trackTimeCell.className = "trackTimeColumn";
-        trackTimeCell.textContent = "" + secondsToDisplayTime(trackInfo["duration"]);
-
-        rowElement.appendChild(trackNumCell);
-        rowElement.appendChild(trackNameCell);
-        rowElement.appendChild(trackTimeCell);
-        tbodyElement.appendChild(rowElement);
-      }
-
-      tracklistTable.appendChild(tbodyElement);
-      tracklistTable.setAttribute("style", "display: table");
-    } else {
+    if (!tracklist) {
       tracklistTable.setAttribute("style", "display: none");
+      return;
     }
+
+    // Clean table
+    while (tracklistTable.lastChild) {
+      tracklistTable.removeChild(tracklistTable.lastChild);
+    }
+
+    // Build new table
+    var tbodyElement = document.createElement("tbody");
+    for (var trackIdx in tracklist) {
+      var trackInfo = tracklist[trackIdx];
+      var trackNum = parseInt(trackIdx) + 1;
+      trackNum = (trackNum < 10) ? ("0" + trackNum) : trackNum;
+
+      var rowElement = document.createElement("tr");
+      var trackNumCell = document.createElement("td");
+      trackNumCell.className = "trackNumColumn";
+      trackNumCell.textContent = "" + trackNum;
+
+      var trackNameCell = document.createElement("td");
+      trackNameCell.className = "trackNameColumn";
+      trackNameCell.textContent = "" + trackInfo["title"];
+
+      var trackTimeCell = document.createElement("td");
+      trackTimeCell.className = "trackTimeColumn";
+      trackTimeCell.textContent = "" + secondsToDisplayTime(trackInfo["duration"]);
+
+      rowElement.appendChild(trackNumCell);
+      rowElement.appendChild(trackNameCell);
+      rowElement.appendChild(trackTimeCell);
+      tbodyElement.appendChild(rowElement);
+    }
+
+    tracklistTable.appendChild(tbodyElement);
+    tracklistTable.setAttribute("style", "display: table");
   });
 }
 
@@ -431,6 +437,87 @@ function setTracklistLayout(mainPopupLabel, secondaryPopupLabel, noTrackLabel, t
   mainPopupLabel.setAttribute("style", "display: block");
   secondaryPopupLabel.setAttribute("style", "display: block");
   noTrackLabel.setAttribute("style", "display: none");
+}
+
+// Activate/deactivate a ticker checking the current video and track every 3s, sending a notification on each change
+function setNotifications(enabled) {
+  clearInterval(notificationsTickerIntervalID); // Stop any existing ticker
+
+  if (!enabled) {
+    return;
+  }
+
+  notificationsTickerIntervalID = window.setInterval(function () {
+    // Get the current video name and track number
+    chrome.tabs.sendMessage(trackedTabId, "getCurrentVideoNameAndTrackNum", function (data) {
+      chrome.runtime.lastError; // Silence the error by accessing the variable
+      if (!data) {
+        return;
+      }
+
+      var videoName = data.split(':')[0];
+      var trackNum = data.split(':')[1];
+
+      // Nothing to do on first iteration
+      if (lastNotifiedVideoName === null && lastNotifiedTrackNum === null) {
+        lastNotifiedVideoName = videoName;
+        lastNotifiedTrackNum = trackNum;
+        tracklistCacheForNotifications = tracklistCache;
+        return;
+      }
+
+      // Nothing to do if video & track didn't change
+      if (videoName === lastNotifiedVideoName && trackNum === lastNotifiedTrackNum) {
+        return;
+      }
+
+      lastNotifiedTrackNum = trackNum;
+
+      // If only the track number changed, send a notification using the existing tracklist
+      if (videoName === lastNotifiedVideoName && tracklistCacheForNotifications !== null) {
+        sendTrackChangeNotification(videoName, trackNum);
+        return
+      }
+
+      // If the video changed, update the tracklist
+      chrome.tabs.sendMessage(trackedTabId, "getTracklist", function (tracklist) {
+        chrome.runtime.lastError; // Silence the error by accessing the variable
+        if (!tracklist) {
+          tracklist = []
+        }
+
+        lastNotifiedVideoName = videoName;
+        tracklistCacheForNotifications = tracklist;
+        sendTrackChangeNotification(videoName, trackNum);
+      });
+    });
+  }, 3000);
+}
+
+function sendTrackChangeNotification(videoName, trackNum) {
+  // For an empty tracklist, the title will be the name of the video
+  if (tracklistCacheForNotifications.length === 0 || !tracklistCacheForNotifications[trackNum]) {
+    chrome.notifications.create(
+      "track_change_notification",
+      {
+        type: "basic",
+        iconUrl: "img/icon128.png",
+        title: videoName,
+        message: ""
+      }
+    );
+    return
+  }
+
+  chrome.notifications.create(
+    "track_change_notification",
+    {
+      type: "basic",
+      iconUrl: "img/icon128.png",
+      title: tracklistCacheForNotifications[trackNum]["title"],
+      message: videoName
+    }
+  );
 }
 
 init();

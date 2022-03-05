@@ -28,6 +28,14 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tabs) {
     backgroundPage.trackedTabId = null;
   }
 
+  // Set the notifications toggle button image
+  chrome.storage.sync.get('notifications_enabled', function(data) {
+    if (data['notifications_enabled'] === true) {
+      document.getElementById('toggleNotificationsButton').classList.add("buttonActive");
+      backgroundPage.setNotifications(true);
+    }
+  });
+
   var currentTab = tabs[0];
   startRefreshTicker(currentTab);
   addEvents(currentTab);
@@ -130,6 +138,21 @@ function addEvents(currentTab) {
   // Add click event to the settings button
   document.getElementById('settingsButton').addEventListener("click",  function () {
     chrome.tabs.create({url: 'chrome://extensions/configureCommands'});
+  });
+
+  // Toggle notifications on button click
+  document.getElementById('toggleNotificationsButton').addEventListener("click",  function () {
+    chrome.storage.sync.get('notifications_enabled', function(data) {
+      if (data['notifications_enabled'] === true) {
+        chrome.storage.sync.set({ notifications_enabled: false });
+        document.getElementById('toggleNotificationsButton').classList.remove("buttonActive");
+        backgroundPage.setNotifications(false);
+      } else {
+        chrome.storage.sync.set({ notifications_enabled: true });
+        document.getElementById('toggleNotificationsButton').classList.add("buttonActive");
+        backgroundPage.setNotifications(true);
+      }
+    });
   });
 
   // Add click events to the tracklist

@@ -36,6 +36,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "getCurrentTrackNum":
       sendResponse(getCurrentTrackNum());
       return;
+    case "getCurrentVideoNameAndTrackNum":
+      sendResponse(getCurrentVideoName() + ":" + getCurrentTrackNum());
+      return;
     case "getCurrentTime":
       sendResponse(getCurrentTime());
       return;
