@@ -16,6 +16,7 @@ The tracklist can be displayed from any tab and controlled via configurable glob
 - Progress bar on current song (clickable)
 - Support of keyboard media keys (configurable global keyboard shortcuts)
 - Cross-tab interactivity (view and control the tracklist from any tab)
+- Push notifications on track/video change (toggleable setting)
 
 ## Installation
 From extension stores:
