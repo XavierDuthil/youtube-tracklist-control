@@ -28,12 +28,26 @@ chrome.tabs.query({'active': true,'currentWindow': true}, function(tabs) {
     backgroundPage.trackedTabId = null;
   }
 
-  // Set the notifications toggle button image
-  chrome.storage.sync.get('notifications_enabled', function(data) {
-    if (data['notifications_enabled'] === true) {
-      document.getElementById('toggleNotificationsButton').classList.add("buttonActive");
-      backgroundPage.setNotifications(true);
+  // Set the notifications toggle button image (
+  chrome.storage.sync.get('notifications_enabled', function(syncData) {
+    // Try with sync storage first
+    if (syncData !== undefined) {
+      if (syncData['notifications_enabled'] === true) {
+        enableNotifications();
+      } else {
+        disableNotifications();
+      }
+      return;
     }
+
+    // Sync is disabled, use local storage instead
+    chrome.storage.local.get('notifications_enabled', function(localData) {
+      if (localData['notifications_enabled'] === true) {
+        enableNotifications();
+      } else {
+        disableNotifications();
+      }
+    });
   });
 
   var currentTab = tabs[0];
@@ -105,6 +119,8 @@ function refreshPopup(currentTab) {
 }
 
 function addEvents(currentTab) {
+  console.log("Adding events");
+
   // Add click events to the media buttons
   document.getElementById("playOrPauseButton").addEventListener("click", function () {
     backgroundPage.playOrPause();
@@ -142,26 +158,35 @@ function addEvents(currentTab) {
 
   // Toggle notifications on button click
   document.getElementById('toggleNotificationsButton').addEventListener("click",  function () {
-    chrome.storage.sync.get('notifications_enabled', function(data) {
-      if (data['notifications_enabled'] === true) {
-        chrome.storage.sync.set({ notifications_enabled: false });
-        document.getElementById('toggleNotificationsButton').classList.remove("buttonActive");
-        backgroundPage.setNotifications(false);
-      } else {
-        chrome.storage.sync.set({ notifications_enabled: true });
-        document.getElementById('toggleNotificationsButton').classList.add("buttonActive");
-        backgroundPage.setNotifications(true);
+    console.log("Toggling notifications");
+
+    // Try to get from sync storage first
+    chrome.storage.sync.get('notifications_enabled', function(syncData) {
+      if (syncData !== undefined) {
+        console.log("Using sync storage");
+        toggleNotifications(chrome.storage.sync, syncData);
+        return;
       }
+
+      // Sync is disabled, need to use local storage instead
+      console.log("Using local storage");
+      chrome.storage.local.get('notifications_enabled', function(localData) {
+        toggleNotifications(chrome.storage.local, localData);
+      });
     });
   });
 
   // Add click events to the tracklist
   tracklistTable.addEventListener("click", function (event) {
+    console.log("Click on tracklist");
     var clickedTrElement = event.target.parentElement;
 
     // Go to position when progressBar is clicked
     if (clickedTrElement.className === "progressBar") {
-      backgroundPage.goToPercent(Math.round(event.offsetX / clickedTrElement.offsetWidth * 100));
+      var percentage = Math.round(event.offsetX / clickedTrElement.offsetWidth * 100);
+      console.log("Going to " + percentage + "%");
+
+      backgroundPage.goToPercent(percentage);
       refreshPopup(currentTab);
       return;
     }
@@ -180,7 +205,31 @@ function addEvents(currentTab) {
       }
     }
 
+    console.log("Going to track #" + trackIdx);
     backgroundPage.goToTrack(trackIdx);
     refreshPopup(currentTab);
   });
 }
+
+function toggleNotifications(storageManager, data) {
+  if (data && data['notifications_enabled'] === true) {
+    storageManager.set({ notifications_enabled: false });
+    disableNotifications();
+  } else {
+    storageManager.set({ notifications_enabled: true });
+    enableNotifications();
+  }
+}
+
+function disableNotifications() {
+  console.log("Disabling notifications");
+  document.getElementById('toggleNotificationsButton').classList.remove("buttonActive");
+  backgroundPage.setNotifications(false);
+}
+
+function enableNotifications() {
+  console.log("Enabling notifications");
+  document.getElementById('toggleNotificationsButton').classList.add("buttonActive");
+  backgroundPage.setNotifications(true);
+}
+
