@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.2] - 2022-10-18
+### Fixed
+- Icons updated to respect Google branding policies
+
 ## [2.7.1] - 2022-03-13
 ### Fixed
 - Notifications settings use local storage if sync storage is not available
