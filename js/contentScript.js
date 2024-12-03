@@ -212,7 +212,7 @@ function buildTrackList() {
   }
 
   // No tracklist found in description: search in comments
-  var commentElements = document.querySelectorAll('yt-formatted-string.ytd-comment-renderer#content-text');
+  var commentElements = document.querySelectorAll('yt-attributed-string#content-text');
   for (var idx in commentElements) {
     var commentElement = commentElements[idx];
     tracklist = tryBuildingTracklistFrom(commentElement);
